@@ -79,6 +79,7 @@ test("a copied observation summary preserves missingness and prototype context",
   assert.match(text, /29 bpm/);
   assert.match(text, /Temperature: no reading at this hour/);
   assert.match(text, /38\.1 °C.*1 h/);
+  assert.match(text, /38\.1 °C at hour 34.*1\.15 °C above/);
   assert.doesNotMatch(text, /sepsis detected|healthy|safe to wait/i);
 });
 
@@ -126,4 +127,59 @@ test("reading descriptions preserve fractional medians and measured values", () 
   assert.match(text, /100\.5 bpm.*this hour/i);
   assert.match(text, /initial reference.*82\.5 bpm/i);
   assert.match(text, /18 bpm above/i);
+});
+
+test("earlier context preserves Patient A's historical temperature without creating a current delta", () => {
+  assert.equal(typeof story.earlierObservationContext, "function");
+  const record = JSON.parse(readFileSync(new URL("../data/replays/patient-a.json", import.meta.url), "utf8"));
+  const snapshot = story.patientSnapshot(record.hours, 35);
+  const temperature = snapshot.observations[2];
+  const text = story.earlierObservationContext(temperature, snapshot.hour);
+  assert.match(text, /38\.1 °C at hour 34.*1 h earlier/);
+  assert.equal(temperature.reference, 36.95);
+  assert.match(text, /1\.15 °C above the initial reference \(36\.95 °C\)/);
+  assert.match(text, /earlier reading.*not.*current/i);
+  assert.equal(temperature.current, null);
+  assert.equal(temperature.delta, null);
+  assert.equal(snapshot.freshCount, 3);
+  assert.equal(story.earlierObservationContext(snapshot.observations[0], 35), null);
+});
+
+test("earlier context handles no history and insufficient reference without inventing comparisons", () => {
+  assert.equal(typeof story.earlierObservationContext, "function");
+  const snapshot = story.patientSnapshot([hour(0, 80), hour(5, null)], 1);
+  assert.match(story.earlierObservationContext(snapshot.observations[0], 5), /80 bpm at hour 0.*5 h earlier/);
+  assert.match(story.earlierObservationContext(snapshot.observations[0], 5), /not enough reference/i);
+  const empty = story.earlierObservationContext(snapshot.observations[2], 5);
+  assert.match(empty, /No earlier reading available/);
+  assert.doesNotMatch(empty, /null|undefined|NaN|above|below/);
+});
+
+test("earlier context reports long gaps by hour and cannot borrow an unrevealed measurement", () => {
+  assert.equal(typeof story.earlierObservationContext, "function");
+  const snapshot = story.patientSnapshot([hour(10, 80), hour(11, 82), hour(12, 84), hour(30, null), hour(31, 150)], 3);
+  const text = story.earlierObservationContext(snapshot.observations[0], 30);
+  assert.match(text, /84 bpm at hour 12.*18 h earlier/);
+  assert.match(text, /2 bpm above/);
+  assert.doesNotMatch(text, /150|recent|fresh|current reading/i);
+});
+
+test("historical comparisons handle lower and unchanged values and oxygen percentage points", () => {
+  assert.equal(typeof story.earlierObservationContext, "function");
+  const rows = [0, 1, 2, 12, 20].map((at) => ({ ...hour(at, at === 20 ? null : 80), spo2: at === 20 ? null : at === 12 ? 93 : 96 }));
+  const snapshot = story.patientSnapshot(rows, 4);
+  const oxygen = story.earlierObservationContext(snapshot.observations[3], 20);
+  assert.match(oxygen, /93 % at hour 12.*8 h earlier/);
+  assert.match(oxygen, /3 percentage points below/);
+  assert.doesNotMatch(oxygen, /3 % below/);
+  const heartRate = story.earlierObservationContext(snapshot.observations[0], 20);
+  assert.match(heartRate, /unchanged from the initial reference/i);
+  assert.doesNotMatch(heartRate, /above|below/);
+});
+
+test("historical fractional references do not expose floating-point artifacts", () => {
+  const rows = [hour(0, 80, 36.3), hour(1, 80, 36.3), hour(2, 80, 36.4), hour(3, 80, 36.4), hour(12, null)];
+  const item = story.patientSnapshot(rows, 4).observations[2];
+  const text = story.earlierObservationContext(item, 12);
+  assert.match(text, /0\.05 °C above the initial reference \(36\.35 °C\)/);
 });
