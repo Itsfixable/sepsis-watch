@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local research inputs and isolated training environment
+/.venv-research/
+/.research-cache/
+__pycache__/
