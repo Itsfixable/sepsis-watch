@@ -6,13 +6,24 @@
 import { addReading, getReadings } from "@/lib/readingsStore";
 import type { ApiError, ReadingsResponse } from "@/lib/types";
 import { validateReading } from "@/lib/validateReading";
+import { localReadingsEnabled } from "@/lib/monitorMode";
+
+function disabledResponse() {
+  const body: ApiError = {
+    error: "Live readings are disabled. This site uses a self-contained synthetic demo.",
+    details: ["The Python/API demonstration is available only in explicitly enabled local development."],
+  };
+  return Response.json(body, { status: 403, headers: { "Cache-Control": "no-store" } });
+}
 
 export async function GET() {
+  if (!localReadingsEnabled()) return disabledResponse();
   const body: ReadingsResponse = { readings: getReadings() };
   return Response.json(body, { headers: { "Cache-Control": "no-store" } });
 }
 
 export async function POST(request: Request) {
+  if (!localReadingsEnabled()) return disabledResponse();
   let json: unknown;
   try {
     json = await request.json();
