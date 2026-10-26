@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CartesianGrid, Line, LineChart, ReferenceArea, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts";
 import { Icon, type IconName } from "./Icon";
 import type { ReplayRecord, VitalKey } from "@/lib/types";
-import { patientSnapshot, observationDescription, observationSummary, earlierObservationContext } from "@/lib/patientStory";
+import { patientSnapshot, observationDescription, observationSummary, earlierObservationContext, formatObservationValue as display } from "@/lib/patientStory";
 import { riskLevel, RISK_THRESHOLDS } from "@/lib/thresholds";
 import styles from "./PatientStory.module.css";
 
@@ -13,8 +13,7 @@ const ICONS: Record<VitalKey, IconName> = {
   heartRate: "activity", respRate: "breathing", tempC: "temperature", spo2: "oxygen",
 };
 const SCORE_LABELS = { none: "No score", green: "Low illustrative score", yellow: "Elevated illustrative score", red: "High illustrative score" };
-const display = (value: number | null, decimals = 0) => value === null ? "—" : value.toFixed(decimals === 0 && !Number.isInteger(value) ? 1 : decimals);
-const signed = (value: number) => `${value > 0 ? "+" : ""}${Number(value.toFixed(1))}`;
+const signed = (value: number) => `${value > 0 ? "+" : ""}${display(value)}`;
 
 export function PatientStory({ replays }: { replays: ReplayRecord[] }) {
   const [selected, setSelected] = useState(replays.find((record) => record.id === "patient-a")?.id ?? replays[0]?.id);
@@ -113,7 +112,7 @@ function Story({ record }: { record: ReplayRecord }) {
         <section ref={trendRef} tabIndex={-1} className={styles.trend} aria-labelledby="story-trend-heading">
           <div className={styles.sectionHeading}>
             <div><p className={styles.eyebrow}>01 / FOLLOW THE TREND</p><h3 id="story-trend-heading">{focused ? focused.label : "Illustrative risk trend"}</h3></div>
-            <div className={styles.currentHour}><span>REVIEWING</span><strong>Hour {hour.hour}<small> / {lastHour}</small></strong></div>
+            <div className={styles.currentHour}><span>{playing ? "Playing" : index === lastIndex ? "Complete" : "Paused"}</span><strong>Hour {hour.hour}<small> / {lastHour}</small></strong></div>
           </div>
           <div className={styles.chartMeta}>
             <div className={styles.chartActions}><button className={styles.chartToggle} aria-pressed={focus === "risk"} onClick={() => setFocus("risk")}>Illustrative score</button>{focused && <a className={styles.backToReadings} href="#story-readings-heading">Back to readings <Icon name="arrow" size={14} /></a>}</div>
@@ -132,11 +131,16 @@ function Story({ record }: { record: ReplayRecord }) {
               <ReferenceLine x={hour.hour} stroke="#244c3e" strokeDasharray="3 4" />
             </LineChart>
           </div>
-          <div className={styles.chartKey}><span><i />{focused ? "Recorded reading" : "Illustrative score"}</span><span><i className={styles.dashed} />{focused ? "Initial reference" : "Demo thresholds: 0.30 / 0.60"}</span><span className={styles.futureKey}>Shaded area: not yet revealed</span></div>
+          <div className={styles.chartKey}><span><i />{focused ? "Recorded reading" : "Demo score (not a percentage)"}</span><span><i className={styles.dashed} />{focused ? "Initial reference" : "Demo thresholds: 0.30 / 0.60"}</span><span className={styles.futureKey}>Shaded area: not yet revealed</span></div>
           <div className={styles.transport}>
-            <button className={styles.playButton} aria-label={playing ? "Pause replay" : index === lastIndex ? "Restart replay" : "Play replay"} onClick={() => { if (index === lastIndex) setIndex(0); setPlaying(!playing); setCopyStatus(""); }}><span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span></button>
+            <button className={styles.playButton} aria-label={playing ? "Pause replay" : index === lastIndex ? "Restart replay" : "Play replay"} onClick={() => { if (index === lastIndex) setIndex(0); setPlaying(!playing); setCopyStatus(""); }}><span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>{playing ? "Pause" : index === lastIndex ? "Restart" : "Play"}</button>
             <div className={styles.scrubber}><label htmlFor="story-hour">Explore the timeline <span>Hour {hour.hour} of {lastHour}</span></label><input id="story-hour" type="range" min={0} max={lastIndex} value={index} onChange={(event) => seek(Number(event.target.value))} aria-valuetext={`Hour ${hour.hour} of ${lastHour}`} /></div>
             <label className={styles.speed}><span className={styles.srOnly}>Replay speed</span><select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}><option value={1}>1×</option><option value={2}>2×</option><option value={4}>4×</option></select></label>
+            <div className={styles.hourSteps}>
+              <button aria-label="Previous timeline hour" disabled={index === 0} onClick={() => seek(Math.max(0, index - 1))}>−1 hour</button>
+              <span role="status">{playing ? "Playing" : index === lastIndex ? "Complete" : "Paused"} · h{hour.hour}</span>
+              <button aria-label="Next timeline hour" disabled={index === lastIndex} onClick={() => seek(Math.min(lastIndex, index + 1))}>+1 hour</button>
+            </div>
           </div>
           <div className={styles.momentHeading}>SCENARIO CHAPTERS <span>Retrospective shortcuts, not predictions</span></div>
           <div className={styles.moments}>{moments.map((moment) => <button key={moment.number} onClick={() => seek(moment.index)} aria-pressed={index === moment.index}><span>{moment.number}</span><strong>{moment.label}</strong><small>h{record.hours[moment.index].hour}</small></button>)}</div>
@@ -145,7 +149,7 @@ function Story({ record }: { record: ReplayRecord }) {
         <section className={styles.readings} aria-labelledby="story-readings-heading">
           <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>02 / INSPECT THE READINGS</p><h3 id="story-readings-heading" tabIndex={-1}>What changed from the initial reference?</h3></div><span className={styles.freshBadge}>{snapshot.freshCount}/4 at this hour</span></div>
           <div className={styles.columnLabels} aria-hidden="true"><span>VITAL SIGN</span><span>AT HOUR {hour.hour}</span><span>INITIAL → CURRENT</span><span>CHANGE</span></div>
-          <p className={styles.inspectHint}>Select a reading to inspect its trend.</p>
+          <p className={styles.inspectHint}>Select a reading to inspect its trend. The initial reference is the middle value of available readings in the first 12 hours, not a healthy target. Differences are numeric comparisons, not medical warning thresholds.</p>
           <div className={styles.readingRows}>{snapshot.observations.map((item) => <button key={item.key} className={styles.readingRow} data-missing={item.current === null} aria-pressed={focus === item.key} onClick={() => inspect(item.key)} aria-label={`Inspect ${item.label} trend`} aria-describedby={`story-${record.id}-${item.key}-description`}>
             <span id={`story-${record.id}-${item.key}-description`} className={styles.srOnly}>{observationDescription(item)}</span>
             <span className={styles.vitalName}><Icon name={ICONS[item.key]} size={19} /><span><strong>{item.label}</strong><small>{item.current !== null ? "Recorded this hour" : item.lastValue !== null ? `Last: ${display(item.lastValue, item.decimals)} ${item.unit} · ${item.ageHours} h ago` : "No readings yet"}</small></span></span>
@@ -161,11 +165,11 @@ function Story({ record }: { record: ReplayRecord }) {
         <section className={styles.storyCard}>
           <div className={styles.storyTop}><p className={styles.eyebrow}>03 / PUT IT TOGETHER</p><Icon name="table" size={18} /></div>
           <h3>The story at<br />hour {hour.hour}.</h3>
-          <p className={styles.storyLead}>{!snapshot.referenceComplete ? "The initial reference is still building." : changed.length ? `${changed.length} current readings differ from this patient’s initial reference.` : "No changes can be established from the available comparisons."}</p>
+          <p className={styles.storyLead}>{!snapshot.referenceComplete ? "The initial reference is still building." : changed.length ? `${changed.length} current ${changed.length === 1 ? "reading differs" : "readings differ"} from this patient’s initial reference.` : "No changes can be established from the available comparisons."}</p>
           <ul className={styles.findings}>{snapshot.observations.filter((item) => item.current !== null).map((item) => <li key={item.key}><span>{item.label}</span><p>{item.delta !== null ? <><strong>{item.delta === 0 ? "Unchanged" : `${Math.abs(item.delta)} ${item.key === "spo2" ? "percentage points" : item.unit} ${item.delta > 0 ? "above" : "below"}`}</strong> {item.delta === 0 ? "from" : "the"} initial reference.</> : <>Not enough reference readings for a comparison.</>}</p></li>)}</ul>
           {missing.length > 0 && <div className={styles.missingNote}><Icon name="clock" size={17} /><div>
             <strong>{missing.length} {missing.length === 1 ? "reading" : "readings"} not recorded this hour</strong>
-            {missing.map((item) => <p key={item.key}><strong>{item.label}</strong><br />{earlierObservationContext(item, hour.hour)}</p>)}
+            {missing.map((item) => <p key={item.key}><strong>{item.label}</strong><br />{earlierObservationContext(item, hour.hour)?.replace(/(\d+) h /g, "$1\u00a0h ")}</p>)}
           </div></div>}
           <button className={styles.copyButton} onClick={copy}><Icon name="table" size={16} />Copy observation summary<Icon name="arrow" size={16} /></button>
           <p className={styles.copyStatus} role="status">{copyStatus}</p>

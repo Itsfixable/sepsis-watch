@@ -43,6 +43,14 @@ disjoint hospital A records; hospital B is an external test. The page reports er
 not just successful examples. Its two held-out records have precomputed scores, no synthetic
 warning bands, and no individual likelihood claims. Gemini is not enabled.
 
+The research explorer also shows **What the model used** at the selected hour:
+current measurements, carried-forward readings and training-median substitutions.
+It reconstructs the twelve inputs before standardization from the revealed prefix
+and validated model medians. It does not recalculate predictions or attribute causes.
+If no score was published, the view does not claim that substituted values were used.
+With the research Python environment installed, verify the display against the actual
+Python pipeline with `node tests/research-inputs.parity.mjs`.
+
 See [data/research/README.md](data/research/README.md) for the fixed protocol, source/license
 notices, limitations and commands to reproduce the model, metrics and examples. Python and
 scikit-learn are offline development dependencies; Vercel only renders exported JSON artifacts.

@@ -180,4 +180,20 @@
   .moments strong { font-size: 11px; }
   .summaryText textarea { font-size: 16px; }
 }
+.transport { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; }
+.playButton { width: auto; min-width: 76px; padding: 0 12px; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.scrubber input { margin-top: 8px; }
+.scrubber input:focus-visible { outline-offset: 0; border-radius: 4px; }
+.hourSteps { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
+.hourSteps button { min-height: 44px; padding: 8px 12px; border: 1px solid #c5d5ca; border-radius: 6px; font-size: 12px; background: #fff; }
+.hourSteps button:disabled { opacity: .45; cursor: default; }
+.hourSteps span { text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .scrubber { grid-row: 1; grid-column: 1 / -1; }
+  .scrubber label { font-size: 11px; }
+  .scrubber label > span { display: inline; white-space: nowrap; }
+  .playButton { grid-row: 2; grid-column: 1; }
+  .speed { grid-row: 2; grid-column: 3; }
+  .hourSteps { grid-row: 3; }
+}
 @media (prefers-reduced-motion: reduce) { .page *, .page *::before, .page *::after { transition: none !important; scroll-behavior: auto !important; } }

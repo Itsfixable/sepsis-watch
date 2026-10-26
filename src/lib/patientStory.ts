@@ -3,6 +3,12 @@ import { VITALS } from "./vitals";
 
 const finite = (value: number | null) => typeof value === "number" && Number.isFinite(value);
 
+/** Display up to two decimals without hiding fractional references or changing calculations. */
+export function formatObservationValue(value: number | null, decimals = 0): string {
+  if (value === null || !Number.isFinite(value)) return "—";
+  return new Intl.NumberFormat("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: Math.max(2, decimals), useGrouping: false }).format(value);
+}
+
 /** A retrospective snapshot, calculated only from records revealed so far. */
 export function patientSnapshot(hours: ReplayHour[], selectedIndex: number) {
   if (!hours.length) return null;
@@ -40,7 +46,7 @@ export function patientSnapshot(hours: ReplayHour[], selectedIndex: number) {
 
 /** Full reading context for assistive technology, including values hidden on small screens. */
 export function observationDescription(item: NonNullable<ReturnType<typeof patientSnapshot>>["observations"][number]): string {
-  const format = (value: number) => value.toFixed(item.decimals === 0 && !Number.isInteger(value) ? 1 : item.decimals);
+  const format = (value: number) => formatObservationValue(value, item.decimals);
   const reference = item.reference === null
     ? "Not enough reference readings to compare."
     : `Initial reference: ${format(item.reference)} ${item.unit}.`;
@@ -61,7 +67,7 @@ export function observationDescription(item: NonNullable<ReturnType<typeof patie
 export function earlierObservationContext(item: NonNullable<ReturnType<typeof patientSnapshot>>["observations"][number], selectedHour: number): string | null {
   if (item.current !== null) return null;
   if (item.lastValue === null || item.ageHours === null) return "No earlier reading available.";
-  const value = item.lastValue.toFixed(item.decimals === 0 && !Number.isInteger(item.lastValue) ? 1 : item.decimals);
+  const value = formatObservationValue(item.lastValue, item.decimals);
   const delta = item.reference === null ? null : Number((item.lastValue - item.reference).toFixed(2));
   const reference = item.reference === null ? null : Number(item.reference.toFixed(2));
   const unit = item.key === "spo2" ? "percentage points" : item.unit;
@@ -79,7 +85,7 @@ export function observationSummary(record: ReplayRecord, index: number): string 
     if (item.current === null) {
       return `${item.label}: no reading at this hour. ${earlierObservationContext(item, snapshot.hour)}`;
     }
-    return `${item.label}: ${item.current.toFixed(item.decimals)} ${item.unit}.${item.delta !== null ? ` Change from initial reference: ${item.delta > 0 ? "+" : ""}${item.delta} ${unit}.` : " Not enough reference readings to compare."}`;
+    return `${item.label}: ${formatObservationValue(item.current, item.decimals)} ${item.unit}.${item.delta !== null ? ` Change from initial reference: ${item.delta > 0 ? "+" : ""}${item.delta} ${unit}.` : " Not enough reference readings to compare."}`;
   });
   return [
     `SepsisWatch — ${record.label} — hour ${snapshot.hour}`,

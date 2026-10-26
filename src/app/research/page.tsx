@@ -36,18 +36,20 @@ function Results({ a, b }: { a: Evaluation; b: Evaluation }) {
 }
 
 export default function ResearchPage() {
-  const { report, records, modelSha256 } = loadResearchBundle();
+  const { report, records, modelSha256, imputation } = loadResearchBundle();
   return <div className={styles.page}>
     <header className={styles.hero}><Link href="/about">← Back to Overview</Link><p className={styles.eyebrow} style={{ marginTop: 28 }}>SepsisWatch / Research notebook</p>
       <h1>Four vitals.<br />A testable starting point.</h1>
-      <p>A logistic-regression model trained on de-identified ICU records—not invented scores. This separate research experiment shows what it learned, where it fails, and the evidence behind each result.</p></header>
+      <p>A logistic-regression model trained on de-identified ICU records—not invented scores. This separate research experiment shows what it learned, where it fails, and the evidence behind each result.</p>
+      <nav className={styles.jumpLinks} aria-label="Research sections"><a href="#records-title">Inspect a record ↓</a><a href="#results-title">Evaluation results ↓</a></nav></header>
     <aside className={styles.notice}><strong>Research only.</strong> Retrospective ICU data cannot establish safety, accuracy at home, or benefit to patients. Outputs are uncalibrated experimental scores, not individual sepsis likelihoods. The <Link href="/monitor">Monitor</Link> and <Link href="/replay">Timelines</Link> still use synthetic demo records and illustrative scores. No sensor or live clinical model is connected.</aside>
     <section className={styles.section} aria-labelledby="results-title"><div className={styles.sectionHead}><div><p className={styles.eyebrow}>01 / Evaluate before claiming</p><h2 id="results-title">The results, including the errors.</h2>
       <p>Training used {count(report.trainingPatients)} hospital A stays. Validation used {count(report.validation.patients)} different stays for threshold selection. Hospital B was kept entirely outside development.</p></div></div>
-      <Results a={report.internalTest} b={report.externalTest} />
       {report.threshold === null
-        ? <p className={styles.notice}><strong>No threshold met the validation target.</strong> Threshold-dependent outcomes were not evaluated: detected stays, missed stays and false alerts are unavailable, not zero. Ranking and score-error results remain shown above. No working alert threshold is claimed.</p>
+        ? <p className={styles.notice}><strong>No threshold met the validation target.</strong> Threshold-dependent outcomes were not evaluated: detected stays, missed stays and false alerts are unavailable, not zero. Ranking and score-error results remain in the table below. No working alert threshold is claimed.</p>
         : <p className={styles.notice}><strong>This threshold generates too many false alerts for clinical use.</strong> In the external test, {fraction(report.externalTest.falseAlarmStays, report.externalTest.nonSepticStays)} non-septic stays had an alert ({format(report.externalTest.falseAlarmStays === null || report.externalTest.nonSepticStays === 0 ? null : 100 * report.externalTest.falseAlarmStays / report.externalTest.nonSepticStays, 1)}%), while {report.externalTest.missedStays === null ? "an unavailable number of" : count(report.externalTest.missedStays)} septic stays were missed. This is an initial baseline to improve and independently validate—not a deployable clinical predictor.</p>}
+      <p className={styles.tableHint}>Scroll sideways in the table to compare both hospitals. Keyboard: focus the table region and use the arrow keys.</p>
+      <Results a={report.internalTest} b={report.externalTest} />
       <p className={styles.small}>Selection rule: choose the highest 0.01-spaced threshold detecting at least 80% of eligible septic validation stays during their six-hour positive window. {report.threshold === null ? "No threshold was selected." : `Selected threshold: ${report.threshold.toFixed(2)} (${fraction(report.validation.detectedStays, report.validation.septicStays)} validation stays detected).`} This target is an experiment setting, not a medical recommendation. A missed stay includes a positive window with no score. An alert on a negative hour counts as a false-positive hour, including early hours in a later septic stay.</p>
       <div className={styles.methodGrid}>
         <article><h3>Ranking is not accuracy.</h3><p>AUROC measures ranking across thresholds. Average precision summarizes the precision–recall curve for the rare positive hourly target. Neither number shows that the tool improves care.</p></article>
@@ -55,7 +57,7 @@ export default function ResearchPage() {
         <article><h3>Missingness stays visible.</h3><p>Ranking and Brier metrics exclude unscored hours; their counts remain visible. False-positive-hour rates use all eligible negative hours, including unscored ones. Hours from one patient are correlated. These are descriptive estimates without confidence intervals.</p></article>
       </div>
     </section>
-    <ResearchExplorer records={records} threshold={report.threshold} />
+    <ResearchExplorer records={records} threshold={report.threshold} imputation={imputation} />
     <section className={styles.section} aria-labelledby="methods-title"><div className={styles.sectionHead}><div><p className={styles.eyebrow}>03 / Make it reproducible</p><h2 id="methods-title">Methods, not a black box.</h2><p>One fixed experiment. No tuning against the published test results.</p></div></div>
       <div className={styles.explorer}><div className={styles.notes}>
         <details><summary>Training, inputs and leakage controls</summary><p>Hospital A was split by patient record into 70% training, 15% validation and 15% internal test, stratified by outcome with seed 2026. All eligible hospital B stays form the external test. Duplicate IDs and byte-identical source records are rejected across partitions. Distinct admissions belonging to the same person cannot be identified from the released IDs.</p>

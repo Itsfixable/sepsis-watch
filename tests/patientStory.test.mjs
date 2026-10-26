@@ -21,6 +21,17 @@ const require = createRequire(import.meta.url);
 const story = existsSync(source) ? require(path.join(compiled, "patientStory.js")) : {};
 const hour = (at, hr, temp = null) => ({ hour: at, heartRate: hr, respRate: null, tempC: temp, spo2: null, risk: null });
 
+test("display precision preserves fractional references and small differences", () => {
+  assert.equal(typeof story.formatObservationValue, "function");
+  for (const [value, decimals, expected] of [[36.95,1,"36.95"], [37,1,"37.0"], [0.05,0,"0.05"], [82.25,0,"82.25"], [0,0,"0"], [null,1,"—"]]) {
+    assert.equal(story.formatObservationValue(value, decimals), expected);
+  }
+  const record = JSON.parse(readFileSync(new URL("../data/replays/patient-a.json", import.meta.url), "utf8"));
+  const item = story.patientSnapshot(record.hours, 12).observations[2];
+  assert.equal(item.delta, .05);
+  assert.match(story.observationDescription(item), /37\.0 °C.*36\.95 °C.*0\.05 °C above/);
+});
+
 test("an early snapshot never borrows reference readings from the future", () => {
   assert.equal(typeof story.patientSnapshot, "function", "patientSnapshot must be implemented");
   const rows = [hour(0, 80), hour(1, 82), hour(2, 84), hour(3, 200)];
