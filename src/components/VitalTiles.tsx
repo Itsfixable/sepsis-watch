@@ -14,7 +14,7 @@ export function VitalTiles({ values, history = [], sourceLabel }: { values: Reco
           <article key={info.key} className="vital-tile">
             <div className="vital-heading"><h3>{info.label}</h3><Icon name={icons[info.key]} size={19} /></div>
             <div className="vital-value-row"><p className="vital-value">{value === null ? "—" : value.toFixed(info.decimals)}<span>{info.unit}</span></p><Sparkline values={history.slice(-24).map((r) => r[info.key])} /></div>
-            <p className="vital-note">{value === null ? "Awaiting reading" : info.key === "tempC" ? `${celsiusToFahrenheit(value).toFixed(1)} °F${note ? ` · ${note}` : ""}` : note || "Latest available reading"}</p>
+            <p className="vital-note">{value === null ? note || "Awaiting reading" : info.key === "tempC" ? `${celsiusToFahrenheit(value).toFixed(1)} °F${note ? ` · ${note}` : ""}` : note || "Latest available reading"}</p>
             <div className="vital-context"><span>Typical <strong>{info.typical}</strong></span><span>{sourceLabel ?? info.sensor}</span></div>
           </article>
         );

@@ -1,32 +1,29 @@
 # SepsisWatch API
 
-The Raspberry Pi sends one reading per hour to the dashboard. This page shows
-exactly what to send and gives examples you can copy.
+This is a **local-only synthetic-data demonstration**, using a Python script as
+a sensor stand-in. No hardware or trained model is required. Do not send real patient data.
+The public Monitor streams bundled synthetic records independently in each browser.
 
 - **POST `/api/readings`**: store one hourly reading
 - **GET `/api/readings`**: get every reading stored so far, oldest first
 
-Readings are kept in the server's memory. They disappear when the server
-restarts (there is no database yet).
+The API is disabled by default. Both methods return `403 Forbidden` unless explicitly
+enabled in local development. Production builds and Vercel always reject access, even
+when the local flag is set. Local readings are kept in server memory and disappear
+when the server restarts (there is no database or authentication).
 
-## Finding the dashboard's address
+## Enable the local demonstration
 
-The Pi needs the address of the computer running SepsisWatch.
+From the project folder, run:
 
-1. On the Mac, start the dashboard: `npm run dev` (or `npm start` after `npm run build`).
-2. Find the Mac's Wi-Fi address:
+```bash
+SEPSISWATCH_LOCAL_API=1 npm run dev -- --hostname 127.0.0.1
+```
 
-   ```bash
-   ipconfig getifaddr en0
-   ```
-
-   It prints something like `192.168.1.23`.
-3. The dashboard address is then `http://192.168.1.23:3000`. The Pi and the Mac
-   must be on the same Wi-Fi network. The first time, macOS may ask whether
-   "node" can accept incoming connections. Click **Allow**.
-
-In the examples below, replace `192.168.1.23` with your Mac's address. On the
-Mac itself you can use `http://localhost:3000` instead.
+Open `http://127.0.0.1:3000/monitor`. It should say **Local API demonstration**.
+Keep this unauthenticated server bound to localhost; do not expose it on Wi-Fi or through
+a public tunnel. If Next selects another port, use that port in the sender's `--url`.
+Stop the server and restart without the flag to return to the browser-only demo.
 
 ## POST /api/readings
 
@@ -53,6 +50,7 @@ Send one JSON object with **all six fields**:
 | `201 Created` | New hour stored. |
 | `200 OK` | An hour with the same timestamp already existed and was replaced. |
 | `400 Bad Request` | Something was wrong. The body says exactly what. |
+| `403 Forbidden` | Live readings are disabled; use the browser demo or explicitly enabled local development. |
 
 Successful response:
 
@@ -87,14 +85,14 @@ Error response (`400`):
 ### Example: curl (Terminal)
 
 ```bash
-curl -X POST http://192.168.1.23:3000/api/readings \
+curl -X POST http://127.0.0.1:3000/api/readings \
   -H "Content-Type: application/json" \
   -d '{"timestamp":"2026-10-01T14:00:00Z","heartRate":92,"respRate":19,"tempC":37.6,"spo2":96,"risk":0.27}'
 ```
 
-### Example: Python on the Pi (no extra packages)
+### Example: local Python sender (no extra packages)
 
-This uses only Python's built-in libraries, so it runs on a fresh Raspberry Pi OS.
+This uses only Python's built-in libraries. Run it on the same computer as the local server.
 
 ```python
 import json
@@ -102,7 +100,7 @@ import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
-DASHBOARD = "http://192.168.1.23:3000"  # your Mac's address
+DASHBOARD = "http://127.0.0.1:3000"
 
 
 def send_reading(heart_rate, resp_rate, temp_c, spo2, risk):
@@ -138,13 +136,13 @@ send_reading(heart_rate=92, resp_rate=19, temp_c=37.6, spo2=96, risk=0.27)
 
 ### Example: Python with `requests`
 
-If you have already installed `requests` on the Pi (`pip install requests`):
+If you already have `requests` installed locally:
 
 ```python
 from datetime import datetime, timezone
 import requests
 
-DASHBOARD = "http://192.168.1.23:3000"
+DASHBOARD = "http://127.0.0.1:3000"
 
 reading = {
     "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -187,16 +185,15 @@ curl http://localhost:3000/api/readings
 
 ## Testing without the Pi
 
-`scripts/fake_pi.py` pretends to be the Pi. It sends a demo patient's hours
-to the API. With `npm run dev` running, open a second Terminal window in the
-`sepsisWatch` folder and run:
+`scripts/demo_pi.py` stands in for the proposed sensor. With local API mode enabled
+as above, open a second Terminal window in the project folder and run:
 
 ```bash
-python3 scripts/fake_pi.py
+python3 scripts/demo_pi.py --url http://127.0.0.1:3000
 ```
 
-## Before using this outside your own Wi-Fi
+## Not a hosted ingestion service
 
-This API has no password, so anyone who can reach it can add readings. That
-is fine on a home or school network for the demo. Add a shared secret key
-(and HTTPS) before putting it on the public internet.
+The local flag is a development switch, not authentication. A real remote sensor service
+would need authenticated access, durable storage and additional privacy/security review.
+The public site deliberately does not offer that service.

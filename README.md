@@ -81,20 +81,36 @@ This starts the app in **development mode**. When you see `Ready`, open
 **http://localhost:3000** in your browser. Leave this Terminal window open: closing it (or
 pressing `Ctrl C`) stops the app. While it runs, saving any file updates the page automatically.
 
-### See the live monitor fill in (no hardware needed)
+### Try the Demo Monitor (no hardware needed)
 
-The Monitor page (`/monitor`) starts empty because no readings have arrived yet. To pretend to be the Pi, open a
-**second** Terminal window (`⌘ N`) and run:
+Open `/monitor`. Each visitor gets an independent synthetic stream: the first 24 observations
+are shown immediately, followed by one simulated hour every three seconds. Choose a patient,
+pause/resume, or restart. Restart returns to the initial observations and pauses; the stream
+stops at the end. Missing readings stay missing, and scores are illustrative, not validated predictions.
+
+This works on Vercel without a running laptop, database, shared server state, or API submissions.
+Refreshing starts a new session. Only synthetic records are included in this demonstration.
+
+### Demonstrate the Python/API pipeline locally
+
+The live API is **disabled by default**, always disabled in production builds and on Vercel,
+and returns `403` for both GET and POST when disabled. To try the local-only sensor stand-in,
+stop any existing dev server and start it with:
 
 ```bash
-cd ~/Desktop/sepsisWatch
-python3 scripts/fake_pi.py
+SEPSISWATCH_LOCAL_API=1 npm run dev -- --hostname 127.0.0.1
 ```
 
-It sends the first 24 hours of demo Patient A right away, then one more hour every 10 seconds.
-Watch the Monitor page: it checks for new readings every 10 seconds, so the light, tiles and chart
-update on their own. Press `Ctrl C` to stop it. To start over with an empty monitor, stop and
-restart `npm run dev`. Readings live only in memory.
+Then open a **second** Terminal window in the project folder and run:
+
+```bash
+python3 scripts/demo_pi.py --url http://127.0.0.1:3000
+```
+
+Open `http://127.0.0.1:3000/monitor` to see **Local API demonstration**. The sender posts the first
+24 observations immediately, then one more every 10 seconds. This local page polls every 10 seconds.
+Use only synthetic data. Press `Ctrl C` to stop the sender; restarting the server clears its memory.
+This mode has no authentication: keep it bound to localhost and do not expose it through a tunnel.
 
 ### Watch a replay
 
@@ -247,7 +263,7 @@ catches sepsis earlier but raises more false alarms.
 | `data/replays/*.json` | One file per replay patient. The three included patients are synthetic. |
 | `scripts/physionet_to_replay.py` | Turns a PhysioNet 2019 `.psv` file + your model's score CSV into a replay file. |
 | `scripts/make_fake_replays.py` | Re-creates the three synthetic demo patients. |
-| `scripts/fake_pi.py` | Pretends to be the Raspberry Pi so you can test the live monitor without hardware. |
+| `scripts/demo_pi.py` | Sends synthetic observations to the explicitly enabled local API demonstration. |
 | `docs/API.md` | How the Pi talks to the API, with curl and Python examples. |
 
 The Python scripts use only Python's built-in libraries, so there is nothing extra to install.
@@ -269,10 +285,8 @@ The Python scripts use only Python's built-in libraries, so there is nothing ext
 ## Limitations (good to say in your video)
 
 - **Early warning, not diagnosis.** The light means "look closer," never "this patient has sepsis."
-- **No database yet.** Live readings are lost when the server restarts.
-- **One server only.** Readings are kept in one computer's memory, so this runs on a laptop,
-  not on hosting that runs many copies (like Vercel) until a database is added.
-- **No login on the API.** Fine on your own Wi-Fi for the demo; add a secret key before going online.
+- **Public demo, not live monitoring.** The public Monitor uses bundled synthetic observations in each browser; it does not accept readings or share state between visitors.
+- **Local API has no database or authentication.** Explicitly enabled local development retains readings only in one server's memory. Keep it on localhost with synthetic data. It is disabled in production and on Vercel; a real hosted service would need persistent storage and authenticated access.
 - **Synthetic replays** are labeled as such until real PhysioNet records and model scores are added.
 
 ## Built with
