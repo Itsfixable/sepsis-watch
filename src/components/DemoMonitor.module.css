@@ -1,0 +1,33 @@
+.root button, .root summary, .root select { min-height: 44px; }
+.root button:disabled { cursor: default; }
+.root :is(button, select, summary, a, [tabindex]):focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }
+.picker { display: grid; gap: 6px; color: var(--color-ink-2); font-size: 12px; min-width: 240px; }
+.picker select { width: 100%; border: 1px solid var(--color-hairline); border-radius: 6px; padding: 9px 34px 9px 12px; background: var(--color-panel); color: var(--color-ink); font-size: 14px; }
+.notice { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; border: 1px solid #c8ded6; border-radius: 8px; background: #f0f7f4; color: var(--color-ink-2); margin-bottom: 20px; }
+.notice > svg { flex-shrink: 0; margin-top: 2px; color: var(--color-accent); }
+.notice strong { display: block; color: var(--color-accent); font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.notice p { font-size: 12px; line-height: 1.65; max-width: 86ch; }
+.controls { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.streamState p { display: flex; align-items: center; gap: 7px; color: var(--color-ink); font-size: 13px; font-weight: 550; }
+.streamState > span { display: block; margin-top: 5px; color: var(--color-ink-2); font-size: 12px; line-height: 1.6; }
+.buttons { display: flex; flex-shrink: 0; gap: 8px; }
+.buttons button { min-width: 100px; }
+.safety { max-width: 100ch; margin-top: 20px; font-size: 12px; line-height: 1.75; color: var(--color-ink-2); }
+.empty { padding: 32px 24px; border: 1px solid var(--color-hairline); border-radius: 8px; background: var(--color-panel); }
+.empty h2 { font-size: 20px; margin-bottom: 10px; }
+.empty p { color: var(--color-ink-2); margin-bottom: 20px; }
+
+@media (max-width: 620px) {
+  .picker { width: 100%; min-width: 0; }
+  .picker select { font-size: 16px; }
+  .notice { padding: 14px; }
+  .controls { align-items: stretch; flex-direction: column; gap: 12px; }
+  .buttons button { flex: 1; }
+  .root :global(.patient-strip) { flex-wrap: wrap; }
+  .root :global(.patient-title) { flex: 1; min-width: 0; }
+  .root :global(.patient-strip-meta) { flex-basis: 100%; margin-left: 0; }
+  .root :global(.vital-note) { min-height: 36px; }
+  .root :global(.vital-context) { flex-wrap: wrap; gap: 5px; }
+  .root :global(.chart-legend) { flex-wrap: wrap; }
+  .root :global(.chart-legend-note) { margin-left: 0; }
+}

@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
-Pretend to be the Raspberry Pi: send readings to the dashboard so you can
-test the home page without any hardware.
+Stand in for the proposed Raspberry Pi: send synthetic readings to the local
+API demonstration without hardware. Never send real patient data.
 
 It takes a replay patient from data/replays/ and POSTs their hours to
 /api/readings one at a time, as if they were happening live.
 
-Run from the sepsisWatch folder, while `npm run dev` is running in
-another Terminal window:
+Run from the project folder, while this is running in another Terminal:
 
-    python3 scripts/fake_pi.py
+    SEPSISWATCH_LOCAL_API=1 npm run dev -- --hostname 127.0.0.1
+
+    python3 scripts/demo_pi.py --url http://127.0.0.1:3000
 
 Options:
     --patient ID    which replay to send (default: patient-a)
@@ -17,9 +18,11 @@ Options:
     --every S       then send one more hour every S seconds (default: 10)
     --url URL       dashboard address (default: http://localhost:3000)
 
-The fake clock runs fast: each new reading is stamped one hour after the
+The simulated clock runs fast: each new reading is stamped one hour after the
 last one, even though only a few seconds pass. Press Ctrl+C to stop.
 Readings stay in the server's memory until you stop `npm run dev`.
+The public Vercel site and production builds reject this API; their Monitor
+runs independently in each visitor's browser instead.
 """
 
 import argparse
@@ -49,7 +52,7 @@ def post(url, reading):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Send fake bedside readings to SepsisWatch.")
+    parser = argparse.ArgumentParser(description="Send synthetic observations to the local SepsisWatch API demo.")
     parser.add_argument("--patient", default="patient-a")
     parser.add_argument("--backfill", type=int, default=24)
     parser.add_argument("--every", type=float, default=10)

@@ -42,6 +42,7 @@ type Props = {
   /** Draw a dot on the newest point (the replay "playhead"). */
   showEndDot?: boolean;
   ariaLabel: string;
+  illustrative?: boolean;
 };
 
 // Threshold labels get a dark outline so they stay readable where a marker line crosses them.
@@ -55,7 +56,7 @@ const THRESHOLD_LABEL = {
 
 const AXIS = { stroke: "var(--color-hairline)", fontSize: 11, fill: "var(--color-muted)" };
 
-export function RiskChart({ points, xDomain, xTicks, formatTick, formatX, markers = [], showEndDot, ariaLabel }: Props) {
+export function RiskChart({ points, xDomain, xTicks, formatTick, formatX, markers = [], showEndDot, ariaLabel, illustrative = false }: Props) {
   const last = [...points].reverse().find((p) => p.risk !== null);
 
   return (
@@ -120,7 +121,7 @@ export function RiskChart({ points, xDomain, xTicks, formatTick, formatX, marker
         <Tooltip
           cursor={{ stroke: "var(--color-ink-2)", strokeWidth: 1 }}
           isAnimationActive={false}
-          content={(props) => <ChartTooltip {...props} formatX={formatX} />}
+          content={(props) => <ChartTooltip {...props} formatX={formatX} illustrative={illustrative} />}
         />
 
         <Line
@@ -169,7 +170,7 @@ function MarkerLabel({ x, y, row, text }: { x: number; y: number; row: number; t
   );
 }
 
-function ChartTooltip({ active, payload, formatX }: TooltipContentProps & { formatX: (x: number) => string }) {
+function ChartTooltip({ active, payload, formatX, illustrative }: TooltipContentProps & { formatX: (x: number) => string; illustrative: boolean }) {
   const point = payload?.[0]?.payload as ChartPoint | undefined;
   if (!active || !point) return null;
   const level = riskLevel(point.risk);
@@ -179,7 +180,7 @@ function ChartTooltip({ active, payload, formatX }: TooltipContentProps & { form
       <p className="mt-1 flex items-center gap-2">
         <span aria-hidden className="inline-block h-0.5 w-3 rounded bg-trace" />
         <span className="text-sm font-semibold text-ink">{formatRisk(point.risk)}</span>
-        <span className="text-ink-2">risk · {LEVEL_TEXT[level].title}</span>
+        <span className="text-ink-2">{illustrative ? "illustrative score" : "risk"} · {LEVEL_TEXT[level].title}</span>
       </p>
     </div>
   );
