@@ -38,6 +38,25 @@ export function patientSnapshot(hours: ReplayHour[], selectedIndex: number) {
   };
 }
 
+/** Full reading context for assistive technology, including values hidden on small screens. */
+export function observationDescription(item: NonNullable<ReturnType<typeof patientSnapshot>>["observations"][number]): string {
+  const format = (value: number) => value.toFixed(item.decimals === 0 && !Number.isInteger(value) ? 1 : item.decimals);
+  const reference = item.reference === null
+    ? "Not enough reference readings to compare."
+    : `Initial reference: ${format(item.reference)} ${item.unit}.`;
+  if (item.current === null) {
+    const previous = item.lastValue === null
+      ? "No earlier reading available."
+      : `Last recorded: ${format(item.lastValue)} ${item.unit}, ${item.ageHours} ${item.ageHours === 1 ? "hour" : "hours"} earlier.`;
+    return `No reading at this hour. ${previous} ${reference} No current comparison.`;
+  }
+  const unit = item.key === "spo2" ? "percentage points" : item.unit;
+  const change = item.delta === null ? "" : item.delta === 0
+    ? " Unchanged from the initial reference."
+    : ` ${Math.abs(item.delta)} ${unit} ${item.delta > 0 ? "above" : "below"} the initial reference.`;
+  return `${format(item.current)} ${item.unit} recorded this hour. ${reference}${change}`;
+}
+
 export function observationSummary(record: ReplayRecord, index: number): string {
   const snapshot = patientSnapshot(record.hours, index);
   if (!snapshot) return "No observations available.";
