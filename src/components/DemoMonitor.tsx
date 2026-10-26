@@ -20,19 +20,15 @@ export function DemoMonitor({ records }: { records: ReplayRecord[] }) {
     <div className={`page-shell ${styles.root}`}>
       <div className="breadcrumb"><span>Workspace</span><Icon name="chevron" size={11} /><span>Monitor</span></div>
       <div className="page-heading">
-        <div><h1>Demo monitor</h1><p className="page-description">Watch observations arrive. See the picture change.</p></div>
-        {record && <label className={styles.picker}>Demo patient
+        <div><h1>Monitor</h1><p className="page-description">Watch observations arrive. See the picture change.</p></div>
+        {record && <label className={styles.picker}>Patient
           <select value={record.id} onChange={(event) => setSelected(event.target.value)}>
             {scenarios.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
           </select>
         </label>}
       </div>
-      <section className={styles.notice} aria-label="About this demonstration">
-        <Icon name="info" size={19} />
-        <div><strong>Synthetic demo data</strong><p>Invented patients and illustrative scores, not a live sensor or a validated prediction. Each visitor gets an independent demo.</p></div>
-      </section>
       {record ? <DemoSession key={record.id} record={record} /> : (
-        <section className={styles.empty}><h2>No demo records available</h2><p>No synthetic scenarios are available to stream.</p><Link href="/replay" className="text-link">Explore timelines<Icon name="arrow" size={14} /></Link></section>
+        <section className={styles.empty}><h2>No patient scenarios available</h2><p>No patient scenarios are available to stream.</p><Link href="/replay" className="text-link">Explore timelines<Icon name="arrow" size={14} /></Link></section>
       )}
     </div>
   );
@@ -59,7 +55,7 @@ function DemoSession({ record }: { record: ReplayRecord }) {
     <>
       <div className={styles.controls}>
         <div className={styles.streamState}>
-          <p role="status"><span className={`status-dot ${session.playing ? "dot-good" : ""}`} />{complete ? "Demo complete" : session.playing ? "Demo running" : "Demo paused"}</p>
+          <p role="status"><span className={`status-dot ${session.playing ? "dot-good" : ""}`} />{complete ? "Playback complete" : session.playing ? "Playback running" : "Playback paused"}</p>
           <span id="demo-pace">One simulated hour every 3 seconds · first {Math.min(24, total)} observations preloaded</span>
           <span id="demo-reset-help">Reset to hour {resetHour} restores the first {Math.min(24, total)} observations and pauses. Press Resume to continue.</span>
           <span>Hour 0 is the first observation. Hour {currentHour} is observation {rows.length} of {total}.</span>
@@ -74,10 +70,10 @@ function DemoSession({ record }: { record: ReplayRecord }) {
 
       <div className="patient-strip">
         <span className="bed-icon"><Icon name="monitor" size={20} /></span>
-        <div className="patient-title"><strong>Simulated {record.label}</strong><span>{record.age !== null ? `${record.age} years · ` : ""}Synthetic scenario</span></div>
+        <div className="patient-title"><strong>Simulated {record.label}</strong><span>{record.age !== null ? `${record.age} years · ` : ""}Simulated scenario</span></div>
         <span className="patient-strip-meta"><Icon name="clock" size={13} />Hour {currentHour} of {finalHour}</span>
       </div>
-      <VitalTiles values={tiles} history={rows} sourceLabel="Synthetic observation" />
+      <VitalTiles values={tiles} history={rows} sourceLabel="Simulated observation" />
 
       <div className="monitor-grid">
         <section aria-labelledby="demo-trend-title" className="trend-panel">
@@ -98,7 +94,7 @@ function DemoSession({ record }: { record: ReplayRecord }) {
         <StatusLight risk={current?.risk ?? null} caption={`Hour ${currentHour}`} illustrative />
       </div>
 
-      <DataTable rows={rows.map((r) => ({ ...r, key: String(r.hour), time: `Hour ${r.hour}` }))} caption="Revealed synthetic observations; dashes indicate missing measurements" illustrative timeLabel="Simulated hour" />
+      <DataTable rows={rows.map((r) => ({ ...r, key: String(r.hour), time: `Hour ${r.hour}` }))} caption="Revealed simulated observations; dashes indicate missing measurements" illustrative timeLabel="Simulated hour" />
       <p className={styles.safety}>A research prototype, not a medical device. A low illustrative score does not mean someone is well. If someone seems seriously unwell, seek medical help regardless of this display.</p>
       <section className="replay-promo" aria-label="Explore timelines">
         <div className="promo-icon"><Icon name="replay" size={20} /></div>

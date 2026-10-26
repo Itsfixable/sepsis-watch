@@ -13,7 +13,7 @@ export function DataTable({ rows, caption, illustrative = false, timeLabel = "Ti
       <div className="table-scroll" role="region" aria-label={caption} tabIndex={0}>
         <table>
           <caption className="sr-only">{caption}</caption>
-          <thead><tr><th scope="col" className="text-left">{timeLabel}</th><th scope="col">{illustrative ? "Demo score" : "Risk score"}</th><th scope="col" className="text-left">{illustrative ? "Score level" : "Risk level"}</th><th scope="col">HR · bpm</th><th scope="col">RR · breaths/min</th><th scope="col">Temp · °C</th><th scope="col">SpO₂ · %</th></tr></thead>
+          <thead><tr><th scope="col" className="text-left">{timeLabel}</th><th scope="col">{illustrative ? "Illustrative score" : "Risk score"}</th><th scope="col" className="text-left">{illustrative ? "Score level" : "Risk level"}</th><th scope="col">HR · bpm</th><th scope="col">RR · breaths/min</th><th scope="col">Temp · °C</th><th scope="col">SpO₂ · %</th></tr></thead>
           <tbody>{[...rows].reverse().map((r) => <tr key={r.key}><th scope="row" className="text-left">{r.time}</th><td>{formatRisk(r.risk)}</td><td className="text-left"><span className="table-level" data-level={riskLevel(r.risk)}><span className="status-dot" />{LEVEL_TEXT[riskLevel(r.risk)].title}</span></td><td>{fmt(r.heartRate)}</td><td>{fmt(r.respRate)}</td><td>{fmt(r.tempC, 1)}</td><td>{fmt(r.spo2)}</td></tr>)}</tbody>
         </table>
       </div>

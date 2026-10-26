@@ -13,7 +13,7 @@ export function StatusLight({ risk, caption, noScoreMessage, illustrative = fals
       <div className="risk-reading" aria-live={illustrative ? "off" : "polite"} aria-atomic="true">
         <span className="risk-badge"><Icon name={level === "green" ? "check" : level === "none" ? "clock" : "alert"} size={14} />{level === "none" ? illustrative ? "No score" : "Awaiting data" : `${text.title} ${illustrative ? "score" : "risk"}`}</span>
         <p className="risk-number">{formatRisk(risk)}<span>/ 1.00</span></p>
-        <p className="risk-caption">{illustrative ? "Demo score" : "Sepsis risk score"}{caption ? ` · ${caption}` : ""}</p>
+        <p className="risk-caption">{illustrative ? "Illustrative score" : "Sepsis risk score"}{caption ? ` · ${caption}` : ""}</p>
       </div>
       <div className="risk-scale" aria-hidden="true">
         <div className="risk-scale-track" style={{ gridTemplateColumns: `${RISK_THRESHOLDS.yellow}fr ${RISK_THRESHOLDS.red - RISK_THRESHOLDS.yellow}fr ${1 - RISK_THRESHOLDS.red}fr` }}>
@@ -22,7 +22,7 @@ export function StatusLight({ risk, caption, noScoreMessage, illustrative = fals
         </div>
         <div className="risk-scale-labels"><span>0.00</span><span>1.00</span></div>
       </div>
-      <p className="risk-message">{illustrative ? level === "none" ? "No illustrative score recorded this hour." : "Supplied by the synthetic record, not a validated prediction or a probability." : level === "none" && noScoreMessage ? noScoreMessage : text.message}</p>
+      <p className="risk-message">{illustrative ? level === "none" ? "No illustrative score recorded this hour." : "Supplied by the simulated record, not a validated prediction or a probability." : level === "none" && noScoreMessage ? noScoreMessage : text.message}</p>
       {illustrative && <p className="risk-caption">Illustrative thresholds</p>}
       <dl className="threshold-list">
         <div><dt><span className="status-dot dot-good" />Low</dt><dd>&lt; {RISK_THRESHOLDS.yellow.toFixed(2)}</dd></div>

@@ -6,6 +6,8 @@
 // - `markers` draws labelled vertical lines (used by the Replay page for
 //   "turned red" and "sepsis recognized").
 
+import { useId } from "react";
+import { RiskStroke } from "./RiskStroke";
 import {
   CartesianGrid,
   Line,
@@ -57,11 +59,13 @@ const THRESHOLD_LABEL = {
 const AXIS = { stroke: "var(--color-hairline)", fontSize: 11, fill: "var(--color-muted)" };
 
 export function RiskChart({ points, xDomain, xTicks, formatTick, formatX, markers = [], showEndDot, ariaLabel, illustrative = false }: Props) {
+  const riskStrokeId = useId();
   const last = [...points].reverse().find((p) => p.risk !== null);
 
   return (
     <div className="risk-chart" role="img" aria-label={ariaLabel}>
       <LineChart responsive data={points} margin={{ top: 22, right: 12, bottom: 4, left: -8 }} style={{ width: "100%", height: "100%" }}>
+        <RiskStroke id={riskStrokeId} />
         <CartesianGrid vertical={false} stroke="var(--color-grid)" strokeDasharray="3 4" />
 
         {/* Threshold bands: faint tint above each line. */}
@@ -127,18 +131,18 @@ export function RiskChart({ points, xDomain, xTicks, formatTick, formatX, marker
         <Line
           type="linear"
           dataKey="risk"
-          stroke="var(--color-trace)"
+          stroke={`url(#${riskStrokeId})`}
           strokeWidth={2.25}
           strokeLinecap="round"
           strokeLinejoin="round"
           dot={false}
-          activeDot={{ r: 5, fill: "var(--color-trace)", stroke: "var(--color-panel)", strokeWidth: 2 }}
+          activeDot={{ r: 5, fill: `url(#${riskStrokeId})`, stroke: "var(--color-panel)", strokeWidth: 2 }}
           connectNulls={false}
           isAnimationActive={false}
         />
 
         {showEndDot && last && last.risk !== null && (
-          <ReferenceDot x={last.x} y={last.risk} r={5} fill="var(--color-trace)" stroke="var(--color-panel)" strokeWidth={2} />
+          <ReferenceDot x={last.x} y={last.risk} r={5} fill={last.risk >= RISK_THRESHOLDS.red ? "#b8322a" : "var(--color-trace)"} stroke="var(--color-panel)" strokeWidth={2} />
         )}
       </LineChart>
     </div>

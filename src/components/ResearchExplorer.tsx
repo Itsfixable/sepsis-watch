@@ -15,7 +15,7 @@ export function ResearchExplorer({ records, threshold, imputation }: { records: 
   const [selected, setSelected] = useState(0);
   if (!records.length) return <p>No research records available.</p>;
   return <section className={styles.section} aria-labelledby="records-title">
-    <div className={styles.sectionHead}><div><p className={styles.eyebrow}>02 / Inspect the evidence</p><h2 id="records-title" tabIndex={-1}>Two held-out records.</h2>
+    <div className={styles.sectionHead}><div><p className={styles.eyebrow}>01 / Inspect the records</p><h2 id="records-title" tabIndex={-1}>Two held-out records.</h2>
       <p>Real, de-identified ICU observations. Selected by record ID before model results were known—not chosen for successful predictions.</p></div>
       <label className={styles.picker}>Choose a record<select value={selected} onChange={event => setSelected(Number(event.target.value))}>
         {records.map((record, index) => <option key={record.id} value={index}>{record.label} · {record.id}</option>)}

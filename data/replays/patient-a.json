@@ -1,7 +1,7 @@
 {
   "id": "patient-a",
   "label": "Patient A · Pneumonia",
-  "description": "Synthetic demo patient: a 67-year-old woman admitted to the ICU with pneumonia.",
+  "description": "Simulated patient: a 67-year-old woman admitted to the ICU with pneumonia.",
   "source": "synthetic",
   "age": 67,
   "sex": "F",

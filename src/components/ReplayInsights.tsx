@@ -47,7 +47,7 @@ export function ReplayInsights({ hours, index, level, news2 }: Props) {
         <p className="insight-footer">These comparisons use the latest available reading for each vital, which may be older than the selected hour. They do not explain how the supplied score was generated.</p>
         <p className="insight-footer">
           Four-vital NEWS2 comparison (partial score): <strong>{news2 ?? "--"}</strong>
-          {news2 !== null && news2 >= NEWS2_ALERT_AT ? " · at the demo threshold" : ` · demo threshold ${NEWS2_ALERT_AT}`}
+          {news2 !== null && news2 >= NEWS2_ALERT_AT ? " · at the illustrative threshold" : ` · illustrative threshold ${NEWS2_ALERT_AT}`}
         </p>
         <p className="insight-footer">This comparison uses oxygen saturation scale 1 and carries earlier measurements forward. It omits blood pressure, consciousness or new confusion, and supplemental oxygen use. It is not a full clinical NEWS2 assessment.</p>
       </section>
