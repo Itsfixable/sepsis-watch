@@ -43,7 +43,7 @@ const TOOLS: Tool[] = [
     who: "Student prototype (this project)",
     where: "In your browser, with synthetic demo records",
     needs: "Invented heart rate, breathing rate, temperature and oxygen readings, plus illustrative scores",
-    evidence: "Working interface and local API demonstration. No trained prediction model or bedside sensor is connected to this app. No clinical performance has been established.",
+    evidence: "Synthetic interface demonstration plus a separate retrospective four-vital model experiment on held-out ICU records. No live model or bedside sensor is connected. No clinical benefit has been established.",
     source: { label: "Explore the timelines", href: "/replay" },
     ours: true,
   },
@@ -67,7 +67,8 @@ export default function AboutPage() {
       <section className="project-purpose" aria-labelledby="purpose-title">
         <h2 id="purpose-title">Why changing vitals matter.</h2>
         <p>Sepsis is a life-threatening reaction to an infection that can damage organs. Prompt medical treatment is essential. <a className="underline underline-offset-2" href="https://www.cdc.gov/sepsis/about/index.html" target="_blank" rel="noreferrer">About sepsis (CDC)</a></p>
-        <p>SepsisWatch explores a future monitoring interface for care teams and caregivers. Today, you can compare synthetic observations, inspect earlier readings, and follow illustrative scores. No trained model or sensor is connected, and this demo does not establish that it can detect sepsis. Clinical evaluation would be needed before any patient-care use.</p>
+        <p>SepsisWatch explores a future monitoring interface for care teams and caregivers. Today, you can compare synthetic observations, inspect earlier readings, and follow illustrative scores. No live model or sensor is connected, and this demo does not establish that it can detect sepsis. Clinical evaluation would be needed before any patient-care use.</p>
+        <p>A separate <Link className="underline underline-offset-2" href="/research">research notebook</Link> evaluates a trained four-vital model on held-out PhysioNet ICU records, with false alarms, missed cases and two real de-identified examples. Those results do not establish safety or effectiveness at home.</p>
       </section>
 
       <section className="project-section" aria-labelledby="system-title">
@@ -104,7 +105,7 @@ export default function AboutPage() {
           <details><summary>How should I interpret the score?</summary><p>Demo scores run from 0 to 1, with illustrative thresholds of {RISK_THRESHOLDS.yellow.toFixed(2)} and {RISK_THRESHOLDS.red.toFixed(2)}. They are not probabilities or validated predictions. A low score does not mean someone is well; seek medical help if someone seems seriously unwell, regardless of this display.</p></details>
           <details><summary>What does a timeline show?</summary><p>Explore synthetic hourly observations, inspect a vital&apos;s trend, and compare current readings with the initial reference. Use playback or the chapter shortcuts to choose an hour. The detailed comparison also shows threshold crossings against a simulated onset time.</p></details>
           <details><summary>What happens when a reading is missing?</summary><p>The public Monitor and patient story leave a missing current reading blank and label any earlier value with its age. Their vital-sign charts preserve gaps. The detailed NEWS2 comparison carries the last available value forward for each vital, so its inputs may be older than the selected hour.</p></details>
-          <details><summary>Are the model and hardware connected?</summary><p>No. The public site uses bundled synthetic observations and illustrative scores. A Python script can demonstrate API ingestion on localhost; production accepts no readings. A trained model and bedside sensor remain future work, with clinical evaluation needed before any patient-care use.</p></details>
+          <details><summary>Are the model and hardware connected?</summary><p>The Monitor and Timelines use synthetic observations and illustrative scores. The separate <Link className="underline underline-offset-2" href="/research">Research page</Link> shows precomputed outputs from an offline-trained model on held-out ICU records. Neither is live clinical monitoring. A Python script demonstrates API ingestion on localhost; production accepts no readings. Hardware integration and clinical evaluation remain future work.</p></details>
         </div>
       </section>
 

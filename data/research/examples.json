@@ -1,0 +1,928 @@
+{
+  "modelSha256": "5f1a325ffc67fa47b6c61fe8b8198773135a5531aac578f5f5ce5e626b090f2b",
+  "records": [
+    {
+      "hours": [
+        {
+          "heartRate": null,
+          "hour": 0,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": 102.0,
+          "hour": 1,
+          "respRate": 14.0,
+          "risk": 0.008955071754949293,
+          "spo2": 97.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 107.0,
+          "hour": 2,
+          "respRate": 16.0,
+          "risk": 0.010373821371612392,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 104.0,
+          "hour": 3,
+          "respRate": 14.0,
+          "risk": 0.00905896711088612,
+          "spo2": 98.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 104.0,
+          "hour": 4,
+          "respRate": 13.0,
+          "risk": 0.007718622249889243,
+          "spo2": 95.0,
+          "tempC": 36.17
+        },
+        {
+          "heartRate": 102.0,
+          "hour": 5,
+          "respRate": 13.0,
+          "risk": 0.010870137426358804,
+          "spo2": 97.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 100.0,
+          "hour": 6,
+          "respRate": 13.0,
+          "risk": 0.009920937552298,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 7,
+          "respRate": null,
+          "risk": 0.009762835463532562,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 110.0,
+          "hour": 8,
+          "respRate": 15.0,
+          "risk": 0.012345726529290377,
+          "spo2": 96.0,
+          "tempC": 37.11
+        },
+        {
+          "heartRate": 96.0,
+          "hour": 9,
+          "respRate": 14.0,
+          "risk": 0.01489671659859803,
+          "spo2": 99.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 99.0,
+          "hour": 10,
+          "respRate": 16.0,
+          "risk": 0.015495133696077263,
+          "spo2": 98.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 102.0,
+          "hour": 11,
+          "respRate": 17.0,
+          "risk": 0.015544132478057495,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 102.0,
+          "hour": 12,
+          "respRate": 14.0,
+          "risk": 0.006496907969378923,
+          "spo2": 96.0,
+          "tempC": 35.61
+        },
+        {
+          "heartRate": 107.0,
+          "hour": 13,
+          "respRate": 14.0,
+          "risk": 0.009867787769457351,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 109.0,
+          "hour": 14,
+          "respRate": 16.0,
+          "risk": 0.010072046130698203,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 99.0,
+          "hour": 15,
+          "respRate": 15.0,
+          "risk": 0.008152179813524268,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 104.0,
+          "hour": 16,
+          "respRate": 14.0,
+          "risk": 0.008742769345247195,
+          "spo2": 95.0,
+          "tempC": 36.39
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 17,
+          "respRate": 14.0,
+          "risk": 0.012544065580325912,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 105.0,
+          "hour": 18,
+          "respRate": 13.0,
+          "risk": 0.011119255590547765,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 19,
+          "respRate": null,
+          "risk": 0.009173990606254585,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": 108.0,
+          "hour": 20,
+          "respRate": 15.0,
+          "risk": 0.008682922846327046,
+          "spo2": 93.0,
+          "tempC": 36.11
+        },
+        {
+          "heartRate": 109.0,
+          "hour": 21,
+          "respRate": 21.0,
+          "risk": 0.016172947957767834,
+          "spo2": 100.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 106.0,
+          "hour": 22,
+          "respRate": 18.0,
+          "risk": 0.012857591816616356,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 23,
+          "respRate": 17.0,
+          "risk": 0.019142860189118052,
+          "spo2": 93.0,
+          "tempC": 38.22
+        },
+        {
+          "heartRate": 108.0,
+          "hour": 24,
+          "respRate": 19.0,
+          "risk": 0.031021038062471522,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 116.0,
+          "hour": 25,
+          "respRate": 17.0,
+          "risk": 0.02794210745516651,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 113.0,
+          "hour": 26,
+          "respRate": 19.0,
+          "risk": 0.027497625318463854,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 112.0,
+          "hour": 27,
+          "respRate": 20.0,
+          "risk": 0.031421452972069934,
+          "spo2": 98.0,
+          "tempC": 39.11
+        },
+        {
+          "heartRate": 105.0,
+          "hour": 28,
+          "respRate": 21.0,
+          "risk": 0.045181785417673356,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 29,
+          "respRate": 13.0,
+          "risk": 0.02834667531248378,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 30,
+          "respRate": 12.0,
+          "risk": 0.025019813731103423,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 31,
+          "respRate": 20.0,
+          "risk": 0.03278476508099957,
+          "spo2": 97.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 108.0,
+          "hour": 32,
+          "respRate": 17.0,
+          "risk": 0.01974370733586405,
+          "spo2": 99.0,
+          "tempC": 38.28
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 33,
+          "respRate": 15.0,
+          "risk": 0.025656477450485885,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 98.0,
+          "hour": 34,
+          "respRate": 19.0,
+          "risk": 0.02724256122887425,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 98.0,
+          "hour": 35,
+          "respRate": 16.0,
+          "risk": 0.021792786084643478,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 100.0,
+          "hour": 36,
+          "respRate": 15.0,
+          "risk": 0.012456847025143566,
+          "spo2": 93.0,
+          "tempC": 37.33
+        },
+        {
+          "heartRate": 106.0,
+          "hour": 37,
+          "respRate": 13.0,
+          "risk": 0.017323376553199914,
+          "spo2": 92.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 38,
+          "respRate": 16.0,
+          "risk": 0.01767224495345006,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 108.0,
+          "hour": 39,
+          "respRate": 19.0,
+          "risk": 0.019582599395685938,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 102.0,
+          "hour": 40,
+          "respRate": 15.0,
+          "risk": 0.010983365828639213,
+          "spo2": null,
+          "tempC": 37.44
+        },
+        {
+          "heartRate": 104.0,
+          "hour": 41,
+          "respRate": null,
+          "risk": 0.01693660653269441,
+          "spo2": 90.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 42,
+          "respRate": 14.0,
+          "risk": 0.016902337765299136,
+          "spo2": 92.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 109.0,
+          "hour": 43,
+          "respRate": 20.0,
+          "risk": 0.021268964357830624,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 111.0,
+          "hour": 44,
+          "respRate": 19.0,
+          "risk": 0.018358102868656984,
+          "spo2": 95.0,
+          "tempC": 37.67
+        },
+        {
+          "heartRate": 109.0,
+          "hour": 45,
+          "respRate": 20.0,
+          "risk": 0.0272455974313857,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 111.0,
+          "hour": 46,
+          "respRate": 20.0,
+          "risk": 0.025878666988575952,
+          "spo2": 92.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 107.0,
+          "hour": 47,
+          "respRate": 17.0,
+          "risk": 0.020016718064900168,
+          "spo2": 92.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 111.0,
+          "hour": 48,
+          "respRate": 16.0,
+          "risk": 0.01632287740086164,
+          "spo2": 94.0,
+          "tempC": 37.72
+        },
+        {
+          "heartRate": 117.0,
+          "hour": 49,
+          "respRate": 18.0,
+          "risk": 0.027142928189956627,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 115.0,
+          "hour": 50,
+          "respRate": 12.0,
+          "risk": 0.01856667311343873,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 51,
+          "respRate": null,
+          "risk": 0.015338724537083402,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": 111.0,
+          "hour": 52,
+          "respRate": 13.0,
+          "risk": 0.015316635593394794,
+          "spo2": 94.0,
+          "tempC": 37.94
+        },
+        {
+          "heartRate": 111.0,
+          "hour": 53,
+          "respRate": 18.0,
+          "risk": 0.02757343011688869,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 110.0,
+          "hour": 54,
+          "respRate": 15.0,
+          "risk": 0.021876010264087184,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 55,
+          "respRate": null,
+          "risk": 0.018083310908951752,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": 106.0,
+          "hour": 56,
+          "respRate": 16.0,
+          "risk": 0.014269482774540541,
+          "spo2": 93.0,
+          "tempC": 37.44
+        },
+        {
+          "heartRate": 98.0,
+          "hour": 57,
+          "respRate": 20.0,
+          "risk": 0.023087101753649215,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 103.0,
+          "hour": 58,
+          "respRate": 18.0,
+          "risk": 0.02026526359640682,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 106.0,
+          "hour": 59,
+          "respRate": 29.0,
+          "risk": 0.031976237402997064,
+          "spo2": 92.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 106.0,
+          "hour": 60,
+          "respRate": 19.0,
+          "risk": 0.01829227882654676,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 104.0,
+          "hour": 61,
+          "respRate": 17.0,
+          "risk": 0.015132324085572222,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 100.0,
+          "hour": 62,
+          "respRate": 16.0,
+          "risk": 0.012963042153876912,
+          "spo2": 91.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 105.0,
+          "hour": 63,
+          "respRate": 18.0,
+          "risk": 0.011327237081565966,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 108.0,
+          "hour": 64,
+          "respRate": 19.0,
+          "risk": 0.0168730964367858,
+          "spo2": 95.0,
+          "tempC": 37.5
+        },
+        {
+          "heartRate": 112.0,
+          "hour": 65,
+          "respRate": 22.0,
+          "risk": 0.029043705469240892,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 107.0,
+          "hour": 66,
+          "respRate": 17.0,
+          "risk": 0.020205765789741294,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 107.0,
+          "hour": 67,
+          "respRate": 17.0,
+          "risk": 0.018668627114188277,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 101.0,
+          "hour": 68,
+          "respRate": 18.0,
+          "risk": 0.014767619283705274,
+          "spo2": 93.0,
+          "tempC": 37.39
+        },
+        {
+          "heartRate": 104.0,
+          "hour": 69,
+          "respRate": 16.0,
+          "risk": 0.019800600850298323,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 112.0,
+          "hour": 70,
+          "respRate": 19.0,
+          "risk": 0.022372514394160423,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 110.0,
+          "hour": 71,
+          "respRate": 16.0,
+          "risk": 0.01758245209853903,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 115.0,
+          "hour": 72,
+          "respRate": 21.0,
+          "risk": 0.019004212980161268,
+          "spo2": 94.0,
+          "tempC": 37.39
+        },
+        {
+          "heartRate": 114.0,
+          "hour": 73,
+          "respRate": 17.0,
+          "risk": 0.022429129877370772,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 118.0,
+          "hour": 74,
+          "respRate": 13.0,
+          "risk": 0.01778223350639528,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 119.0,
+          "hour": 75,
+          "respRate": 22.0,
+          "risk": 0.025193042288401375,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 122.0,
+          "hour": 76,
+          "respRate": 18.0,
+          "risk": 0.01703591747260602,
+          "spo2": 92.0,
+          "tempC": 37.28
+        },
+        {
+          "heartRate": 99.0,
+          "hour": 77,
+          "respRate": 14.0,
+          "risk": 0.01682363288431477,
+          "spo2": 92.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 102.0,
+          "hour": 78,
+          "respRate": 14.0,
+          "risk": 0.01576719535530595,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 109.0,
+          "hour": 79,
+          "respRate": 17.0,
+          "risk": 0.017582889983731188,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 100.0,
+          "hour": 80,
+          "respRate": 16.0,
+          "risk": 0.013404071576207639,
+          "spo2": 92.0,
+          "tempC": 37.39
+        },
+        {
+          "heartRate": 98.0,
+          "hour": 81,
+          "respRate": 14.0,
+          "risk": 0.01697225540199376,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 102.0,
+          "hour": 82,
+          "respRate": 13.0,
+          "risk": 0.015552437466496313,
+          "spo2": 94.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 101.0,
+          "hour": 83,
+          "respRate": 14.0,
+          "risk": 0.01492762636248175,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 84,
+          "respRate": null,
+          "risk": 0.012324407180665728,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 85,
+          "respRate": null,
+          "risk": 0.013715917899926922,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 86,
+          "respRate": null,
+          "risk": 0.015262112024099444,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 87,
+          "respRate": null,
+          "risk": 0.01451036872060898,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 88,
+          "respRate": null,
+          "risk": 0.01757049896959419,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 89,
+          "respRate": null,
+          "risk": 0.02126206452213124,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 90,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 91,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 92,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 93,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 94,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 95,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 96,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 97,
+          "respRate": null,
+          "risk": null,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 98,
+          "respRate": 20.0,
+          "risk": 0.05304431251349213,
+          "spo2": null,
+          "tempC": null
+        },
+        {
+          "heartRate": 140.0,
+          "hour": 99,
+          "respRate": 14.0,
+          "risk": 0.02023459955595112,
+          "spo2": 100.0,
+          "tempC": 38.0
+        }
+      ],
+      "id": "A:p000078",
+      "inferredOnsetHour": 100,
+      "label": "Research record 1",
+      "source": "physionet2019",
+      "sourceSha256": "984eb4cdb9952ceb194af9aa25a762e224452e6dd57bd8c0268bd060ac8096af"
+    },
+    {
+      "hours": [
+        {
+          "heartRate": 68.0,
+          "hour": 0,
+          "respRate": 18.0,
+          "risk": 0.008115773343097534,
+          "spo2": 97.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 67.0,
+          "hour": 1,
+          "respRate": 15.0,
+          "risk": 0.00765070355390957,
+          "spo2": 96.0,
+          "tempC": 36.78
+        },
+        {
+          "heartRate": 66.0,
+          "hour": 2,
+          "respRate": 16.5,
+          "risk": 0.011753774286421935,
+          "spo2": 96.5,
+          "tempC": null
+        },
+        {
+          "heartRate": 63.0,
+          "hour": 3,
+          "respRate": 14.0,
+          "risk": 0.00943152396729478,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 62.0,
+          "hour": 4,
+          "respRate": 14.0,
+          "risk": 0.008541750837538933,
+          "spo2": 96.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 62.0,
+          "hour": 5,
+          "respRate": 14.0,
+          "risk": 0.007033357344817656,
+          "spo2": 95.0,
+          "tempC": 36.78
+        },
+        {
+          "heartRate": 56.0,
+          "hour": 6,
+          "respRate": 15.0,
+          "risk": 0.010312775277404212,
+          "spo2": 92.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 57.0,
+          "hour": 7,
+          "respRate": 18.0,
+          "risk": 0.010999264035866632,
+          "spo2": 92.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 56.0,
+          "hour": 8,
+          "respRate": 14.0,
+          "risk": 0.008251041832298339,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 55.0,
+          "hour": 9,
+          "respRate": 16.0,
+          "risk": 0.008255453394263373,
+          "spo2": 93.0,
+          "tempC": null
+        },
+        {
+          "heartRate": 61.0,
+          "hour": 10,
+          "respRate": 13.0,
+          "risk": 0.006365124247788929,
+          "spo2": 96.0,
+          "tempC": 36.67
+        },
+        {
+          "heartRate": 54.0,
+          "hour": 11,
+          "respRate": 11.0,
+          "risk": 0.007950700779014127,
+          "spo2": 95.0,
+          "tempC": null
+        },
+        {
+          "heartRate": null,
+          "hour": 12,
+          "respRate": null,
+          "risk": 0.00655608549371304,
+          "spo2": null,
+          "tempC": null
+        }
+      ],
+      "id": "A:p000020",
+      "inferredOnsetHour": null,
+      "label": "Research record 2",
+      "source": "physionet2019",
+      "sourceSha256": "ccf826b1fa27fec29b5565aa5e66ed3bfad6a70a83d61409667b4e52bb099864"
+    }
+  ],
+  "schemaVersion": 1
+}
