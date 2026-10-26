@@ -57,13 +57,27 @@ export function observationDescription(item: NonNullable<ReturnType<typeof patie
   return `${format(item.current)} ${item.unit} recorded this hour. ${reference}${change}`;
 }
 
+/** Historical context only; never fills a current reading or changes its delta. */
+export function earlierObservationContext(item: NonNullable<ReturnType<typeof patientSnapshot>>["observations"][number], selectedHour: number): string | null {
+  if (item.current !== null) return null;
+  if (item.lastValue === null || item.ageHours === null) return "No earlier reading available.";
+  const value = item.lastValue.toFixed(item.decimals === 0 && !Number.isInteger(item.lastValue) ? 1 : item.decimals);
+  const delta = item.reference === null ? null : Number((item.lastValue - item.reference).toFixed(2));
+  const reference = item.reference === null ? null : Number(item.reference.toFixed(2));
+  const unit = item.key === "spo2" ? "percentage points" : item.unit;
+  const comparison = delta === null ? "Not enough reference readings to compare."
+    : delta === 0 ? "That reading was unchanged from the initial reference."
+    : `That reading was ${Math.abs(delta)} ${unit} ${delta > 0 ? "above" : "below"} the initial reference (${reference} ${item.unit}).`;
+  return `Last recorded ${value} ${item.unit} at hour ${selectedHour - item.ageHours}, ${item.ageHours} h earlier. ${comparison} This is an earlier reading, not a current measurement.`;
+}
+
 export function observationSummary(record: ReplayRecord, index: number): string {
   const snapshot = patientSnapshot(record.hours, index);
   if (!snapshot) return "No observations available.";
   const lines = snapshot.observations.map((item) => {
     const unit = item.key === "spo2" ? "percentage points" : item.unit;
     if (item.current === null) {
-      return `${item.label}: no reading at this hour.${item.lastValue !== null ? ` Last recorded ${item.lastValue.toFixed(item.decimals)} ${item.unit}, ${item.ageHours} h earlier.` : " No earlier reading available."}`;
+      return `${item.label}: no reading at this hour. ${earlierObservationContext(item, snapshot.hour)}`;
     }
     return `${item.label}: ${item.current.toFixed(item.decimals)} ${item.unit}.${item.delta !== null ? ` Change from initial reference: ${item.delta > 0 ? "+" : ""}${item.delta} ${unit}.` : " Not enough reference readings to compare."}`;
   });

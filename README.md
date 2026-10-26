@@ -89,7 +89,7 @@ pressing `Ctrl C`) stops the app. While it runs, saving any file updates the pag
 
 Open `/monitor`. Each visitor gets an independent synthetic stream: the first 24 observations
 are shown immediately, followed by one simulated hour every three seconds. Choose a patient,
-pause/resume, or restart. Restart returns to the initial observations and pauses; the stream
+pause/resume, or reset the demo. Reset returns to the initial observations and pauses; the stream
 stops at the end. Missing readings stay missing, and scores are illustrative, not validated predictions.
 
 This works on Vercel without a running laptop, database, shared server state, or API submissions.
@@ -261,7 +261,7 @@ in sync. A future trained model would need separate threshold selection and eval
 
 | File | What it does |
 | ---- | ------------ |
-| `DemoMonitor.tsx` | Independent browser demo with 24 initial observations, timed progression, pause/resume and restart. |
+| `DemoMonitor.tsx` | Independent browser demo with 24 initial observations, timed progression, pause/resume and reset. |
 | `LiveMonitor.tsx` | Local-only Python/API demonstration. Polls every 10 seconds and shows connection or delayed-reading messages. |
 | `PatientStory.tsx` | Main Timelines view: synchronized panels, missing readings, initial references, vital trends and copyable observation summaries. |
 | `ReplayPlayer.tsx` | Detailed comparison player: patient picker, playback, slider, speed, chart markers and result. |

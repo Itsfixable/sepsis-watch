@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CartesianGrid, Line, LineChart, ReferenceArea, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts";
 import { Icon, type IconName } from "./Icon";
 import type { ReplayRecord, VitalKey } from "@/lib/types";
-import { patientSnapshot, observationDescription, observationSummary } from "@/lib/patientStory";
+import { patientSnapshot, observationDescription, observationSummary, earlierObservationContext } from "@/lib/patientStory";
 import { riskLevel, RISK_THRESHOLDS } from "@/lib/thresholds";
 import styles from "./PatientStory.module.css";
 
@@ -163,7 +163,10 @@ function Story({ record }: { record: ReplayRecord }) {
           <h3>The story at<br />hour {hour.hour}.</h3>
           <p className={styles.storyLead}>{!snapshot.referenceComplete ? "The initial reference is still building." : changed.length ? `${changed.length} current readings differ from this patient’s initial reference.` : "No changes can be established from the available comparisons."}</p>
           <ul className={styles.findings}>{snapshot.observations.filter((item) => item.current !== null).map((item) => <li key={item.key}><span>{item.label}</span><p>{item.delta !== null ? <><strong>{item.delta === 0 ? "Unchanged" : `${Math.abs(item.delta)} ${item.key === "spo2" ? "percentage points" : item.unit} ${item.delta > 0 ? "above" : "below"}`}</strong> {item.delta === 0 ? "from" : "the"} initial reference.</> : <>Not enough reference readings for a comparison.</>}</p></li>)}</ul>
-          {missing.length > 0 && <div className={styles.missingNote}><Icon name="clock" size={17} /><div><strong>{missing.length} {missing.length === 1 ? "reading" : "readings"} missing at this hour</strong><p>{missing.map((item) => item.label).join(", ")}. Earlier values are labeled separately, not treated as current.</p></div></div>}
+          {missing.length > 0 && <div className={styles.missingNote}><Icon name="clock" size={17} /><div>
+            <strong>{missing.length} {missing.length === 1 ? "reading" : "readings"} not recorded this hour</strong>
+            {missing.map((item) => <p key={item.key}><strong>{item.label}</strong><br />{earlierObservationContext(item, hour.hour)}</p>)}
+          </div></div>}
           <button className={styles.copyButton} onClick={copy}><Icon name="table" size={16} />Copy observation summary<Icon name="arrow" size={16} /></button>
           <p className={styles.copyStatus} role="status">{copyStatus}</p>
           <details className={styles.summaryText}><summary>View summary text</summary><textarea aria-label="Observation summary text" readOnly value={summary} rows={12} /></details>

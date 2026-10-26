@@ -60,12 +60,13 @@ function DemoSession({ record }: { record: ReplayRecord }) {
         <div className={styles.streamState}>
           <p role="status"><span className={`status-dot ${session.playing ? "dot-good" : ""}`} />{complete ? "Demo complete" : session.playing ? "Demo running" : "Demo paused"}</p>
           <span id="demo-pace">One simulated hour every 3 seconds · first {Math.min(24, total)} observations preloaded</span>
+          <span id="demo-reset-help">Reset returns to the first {Math.min(24, total)} observations and pauses.</span>
         </div>
         <div className={styles.buttons}>
           <button type="button" className="button button-primary" onClick={() => dispatch({ type: "toggle", length: total })} disabled={complete} aria-describedby="demo-pace">
             {complete ? "Completed" : session.playing ? "Pause" : "Resume"}
           </button>
-          <button type="button" className="button" onClick={() => dispatch({ type: "restart", length: total })}><Icon name="refresh" size={15} />Restart</button>
+          <button type="button" className="button" aria-describedby="demo-reset-help" onClick={() => dispatch({ type: "restart", length: total })}><Icon name="refresh" size={15} />Reset demo</button>
         </div>
       </div>
 

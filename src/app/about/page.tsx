@@ -58,22 +58,23 @@ export default function AboutPage() {
         <div className="project-intro">
           <p className="project-eyebrow">SepsisWatch</p>
           <h1 id="project-title">See changing vitals<br />in context.</h1>
-          <p className="project-lead">Explore four vital signs, their history, and illustrative warning scores in one view. This research prototype uses synthetic patients to demonstrate the software.</p>
+          <p className="project-lead">A student research prototype exploring how care teams and caregivers could review changing vital signs during an infection. Try four vital signs, their history, and illustrative warning scores using synthetic patients.</p>
           <div className="project-actions"><Link className="button button-primary" href="/monitor">Open monitor<Icon name="arrow" size={16} /></Link><Link className="button" href="/replay">Explore timelines</Link></div>
         </div>
         <ProjectPreview replays={replays} />
       </section>
 
       <section className="project-purpose" aria-labelledby="purpose-title">
-        <h2 id="purpose-title">Every reading has a history.</h2>
-        <p>Compare a current observation with earlier readings, inspect missing measurements, and follow changes over time. SepsisWatch explores how a future monitoring interface could help people review those changes; this demo does not establish that it can detect sepsis.</p>
+        <h2 id="purpose-title">Why changing vitals matter.</h2>
+        <p>Sepsis is a life-threatening reaction to an infection that can damage organs. Prompt medical treatment is essential. <a className="underline underline-offset-2" href="https://www.cdc.gov/sepsis/about/index.html" target="_blank" rel="noreferrer">About sepsis (CDC)</a></p>
+        <p>SepsisWatch explores a future monitoring interface for care teams and caregivers. Today, you can compare synthetic observations, inspect earlier readings, and follow illustrative scores. No trained model or sensor is connected, and this demo does not establish that it can detect sepsis. Clinical evaluation would be needed before any patient-care use.</p>
       </section>
 
       <section className="project-section" aria-labelledby="system-title">
         <div className="project-section-heading"><h2 id="system-title">One workspace. The whole timeline.</h2><p>Follow a synthetic stream or explore a patient story at your own pace.</p></div>
         <ol className="system-flow">
           <li><Icon name="activity" size={25} /><h3>Inspect four vitals</h3><p>Review heart rate, breathing rate, temperature and oxygen saturation at the selected simulated hour.</p></li>
-          <li><Icon name="signal" size={25} /><h3>Follow the demo stream</h3><p>The Monitor starts with 24 observations and reveals one more every three seconds. Pause, restart or choose another patient.</p></li>
+          <li><Icon name="signal" size={25} /><h3>Follow the demo stream</h3><p>The Monitor starts with 24 observations and reveals one more every three seconds. Pause, reset the demo or choose another patient.</p></li>
           <li><Icon name="monitor" size={25} /><h3>Explore illustrative scores</h3><p>See demo thresholds and score changes. The supplied values are not predictions from a trained model.</p></li>
           <li><Icon name="replay" size={25} /><h3>Revisit key moments</h3><p>Move through a patient timeline, jump to the first warning, and inspect the observations behind each point.</p></li>
         </ol>

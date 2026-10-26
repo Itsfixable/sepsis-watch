@@ -129,8 +129,8 @@
 .findings strong { color: white; font-weight: 550; }
 .missingNote { display: flex; gap: 9px; padding: 13px; margin: 12px -3px 18px; background: #ffffff09; border: 1px solid #70836a; border-radius: 5px; }
 .missingNote > svg { color: #e1d3ad; flex-shrink: 0; margin-top: 1px; }
-.missingNote strong { font-size: 10px; color: #f0e3bf; font-weight: 550; }
-.missingNote p { font-size: 10px; color: #cad9cb; line-height: 1.7; margin-top: 4px; }
+.missingNote strong { font-size: 11px; color: #f0e3bf; font-weight: 550; }
+.missingNote p { font-size: 12px; color: #cad9cb; line-height: 1.7; margin-top: 6px; }
 .copyButton { width: 100%; min-height: 44px; display: flex; align-items: center; gap: 7px; padding: 10px; background: #e2ebd9; color: #24452d; border-radius: 4px; margin-top: 16px; font-size: 11px; font-weight: 600; }
 .copyButton > svg:last-child { margin-left: auto; }
 .copyButton:hover { background: #f2f5e9; }

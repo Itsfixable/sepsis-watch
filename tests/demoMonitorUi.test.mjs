@@ -45,7 +45,7 @@ test("demo Monitor renders labeled synthetic data with only the first 24 observa
   assert.match(words, /every 3 seconds/);
   assert.match(words, /Illustrative score/);
   assert.match(words, /Pause/);
-  assert.match(words, /Restart/);
+  assert.match(words, /Reset demo/);
   assert.match(html, /<th[^>]*>Simulated hour<\/th>/);
   const table = html.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
   assert.equal((table.match(/<tr>/g) ?? []).length, 24);
@@ -123,4 +123,26 @@ test("research-record replay retains its separate source and score labels", () =
   assert.match(text(html), /Hospital record/);
   assert.match(html, /<th[^>]*>Risk score<\/th>/);
   assert.doesNotMatch(html, /<th[^>]*>Demo score<\/th>/);
+});
+
+test("patient story surfaces historical temperature separately from current findings", () => {
+  const { PatientStory } = loadSource(path.join(root, "src/components/PatientStory.tsx"));
+  const html = renderToStaticMarkup(React.createElement(PatientStory, { replays: [patient] }));
+  const context = text(html.match(/<aside[^>]*>([\s\S]*?)<\/aside>/)[1]);
+  const earlier = text(html.match(/<div class="missingNote">([\s\S]*?)<\/div><\/div>/)[1]);
+  const findings = text(html.match(/<ul class="findings">([\s\S]*?)<\/ul>/)[1]);
+  assert.match(context, /1 reading not recorded this hour/);
+  assert.match(earlier, /Temperature.*38\.1 °C at hour 34.*1 h earlier.*1\.15 °C above.*36\.95 °C/);
+  assert.match(earlier, /earlier reading.*not.*current/i);
+  assert.match(context, /3 current readings differ/);
+  assert.doesNotMatch(findings, /Temperature/);
+});
+
+test("patient story distinguishes no history from a timestamped earlier measurement", () => {
+  const { PatientStory } = loadSource(path.join(root, "src/components/PatientStory.tsx"));
+  const record = { ...patient, hours: patient.hours.map((row) => ({ ...row, tempC: null })) };
+  const html = renderToStaticMarkup(React.createElement(PatientStory, { replays: [record] }));
+  const context = text(html.match(/<div class="missingNote">([\s\S]*?)<\/div><\/div>/)[1]);
+  assert.match(context, /Temperature.*No earlier reading available/);
+  assert.doesNotMatch(context, /null|undefined|NaN/);
 });
