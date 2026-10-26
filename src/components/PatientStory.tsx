@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CartesianGrid, Line, LineChart, ReferenceArea, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts";
 import { Icon, type IconName } from "./Icon";
 import type { ReplayRecord, VitalKey } from "@/lib/types";
-import { patientSnapshot, observationSummary } from "@/lib/patientStory";
+import { patientSnapshot, observationDescription, observationSummary } from "@/lib/patientStory";
 import { riskLevel, RISK_THRESHOLDS } from "@/lib/thresholds";
 import styles from "./PatientStory.module.css";
 
@@ -48,6 +48,7 @@ function Story({ record }: { record: ReplayRecord }) {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(2);
   const [focus, setFocus] = useState<VitalKey | "risk">("risk");
+  const [inspectionRequest, setInspectionRequest] = useState(0);
   const [copyStatus, setCopyStatus] = useState("");
   const trendRef = useRef<HTMLElement>(null);
   const lastIndex = record.hours.length - 1;
@@ -61,6 +62,13 @@ function Story({ record }: { record: ReplayRecord }) {
     }, 1200 / speed);
     return () => window.clearTimeout(timer);
   }, [playing, index, lastIndex, speed]);
+
+  useEffect(() => {
+    if (inspectionRequest === 0) return;
+    // Focus after the chart heading updates, including repeated inspection of the same vital.
+    trendRef.current?.focus({ preventScroll: true });
+    trendRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+  }, [inspectionRequest]);
 
   if (!snapshot) return <div className={styles.empty}>This record has no observations.</div>;
   const hour = record.hours[index];
@@ -83,7 +91,7 @@ function Story({ record }: { record: ReplayRecord }) {
   function seek(next: number) { setPlaying(false); setIndex(next); setCopyStatus(""); }
   function inspect(key: VitalKey) {
     setFocus(key);
-    trendRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+    setInspectionRequest((request) => request + 1);
   }
   async function copy() {
     try { await navigator.clipboard.writeText(summary); setCopyStatus("Summary copied."); }
@@ -93,18 +101,22 @@ function Story({ record }: { record: ReplayRecord }) {
   return <section className={styles.workspace} aria-label="Patient story workspace">
     <div className={styles.recordBar}>
       <div className={styles.recordIdentity}><span className={styles.recordIcon}><Icon name="bed" size={22} /></span><div><h2>Simulated {record.label.split(" · ")[0]}</h2><p>{record.age !== null ? `${record.age} years` : "Age unavailable"} · {record.sex === "F" ? "Female" : record.sex === "M" ? "Male" : "Sex unavailable"} · {record.label.split(" · ")[1] ?? "Demo scenario"}</p></div></div>
-      <div className={styles.recordActions}><span className={styles.reviewMode}><Icon name="clock" size={14} />Retrospective review</span><button className={styles.secondaryButton} onClick={() => { setIndex(0); setPlaying(true); setCopyStatus(""); }}><Icon name="replay" size={16} />Replay from start</button></div>
+      <div className={styles.recordActions}><span className={styles.reviewMode}><Icon name="clock" size={14} />Retrospective review</span><button className={styles.secondaryButton} aria-describedby="story-start-help" onClick={() => { setIndex(0); setPlaying(true); setCopyStatus(""); }}><Icon name="replay" size={16} />Replay from start</button></div>
+    </div>
+    <div className={styles.startGuide} id="story-start-help">
+      <Icon name="info" size={18} />
+      <p><strong>Start from the beginning or explore this moment.</strong>{" "}<span>Use “Replay from start” to follow the story, or choose a chapter below. Select a reading to inspect its trend.</span></p>
     </div>
 
     <div className={styles.workspaceGrid}>
       <div className={styles.mainColumn}>
-        <section ref={trendRef} className={styles.trend} aria-labelledby="story-trend-heading">
+        <section ref={trendRef} tabIndex={-1} className={styles.trend} aria-labelledby="story-trend-heading">
           <div className={styles.sectionHeading}>
             <div><p className={styles.eyebrow}>01 / FOLLOW THE TREND</p><h3 id="story-trend-heading">{focused ? focused.label : "Illustrative risk trend"}</h3></div>
             <div className={styles.currentHour}><span>REVIEWING</span><strong>Hour {hour.hour}<small> / {lastHour}</small></strong></div>
           </div>
           <div className={styles.chartMeta}>
-            <button className={styles.chartToggle} aria-pressed={focus === "risk"} onClick={() => setFocus("risk")}>Illustrative score</button>
+            <div className={styles.chartActions}><button className={styles.chartToggle} aria-pressed={focus === "risk"} onClick={() => setFocus("risk")}>Illustrative score</button>{focused && <a className={styles.backToReadings} href="#story-readings-heading">Back to readings <Icon name="arrow" size={14} /></a>}</div>
             {focused ? <span>{focused.unit} · gaps indicate missing readings</span> : <span className={styles.inlineScore} data-level={level}><strong>{display(hour.risk, 2)}</strong> {SCORE_LABELS[level]}</span>}
           </div>
           <div className={styles.chart} role="img" aria-label={`${focused?.label ?? "Illustrative score"} through hour ${hour.hour}. Future readings are hidden. Exact values are listed below.`}>
@@ -131,10 +143,11 @@ function Story({ record }: { record: ReplayRecord }) {
         </section>
 
         <section className={styles.readings} aria-labelledby="story-readings-heading">
-          <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>02 / INSPECT THE READINGS</p><h3 id="story-readings-heading">What changed from the initial reference?</h3></div><span className={styles.freshBadge}>{snapshot.freshCount}/4 at this hour</span></div>
+          <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>02 / INSPECT THE READINGS</p><h3 id="story-readings-heading" tabIndex={-1}>What changed from the initial reference?</h3></div><span className={styles.freshBadge}>{snapshot.freshCount}/4 at this hour</span></div>
           <div className={styles.columnLabels} aria-hidden="true"><span>VITAL SIGN</span><span>AT HOUR {hour.hour}</span><span>INITIAL → CURRENT</span><span>CHANGE</span></div>
           <p className={styles.inspectHint}>Select a reading to inspect its trend.</p>
-          <div className={styles.readingRows}>{snapshot.observations.map((item) => <button key={item.key} className={styles.readingRow} data-missing={item.current === null} aria-pressed={focus === item.key} onClick={() => inspect(item.key)} aria-label={`Inspect ${item.label} trend. ${item.current === null ? "No reading at this hour" : `${display(item.current, item.decimals)} ${item.unit}`}`}>
+          <div className={styles.readingRows}>{snapshot.observations.map((item) => <button key={item.key} className={styles.readingRow} data-missing={item.current === null} aria-pressed={focus === item.key} onClick={() => inspect(item.key)} aria-label={`Inspect ${item.label} trend`} aria-describedby={`story-${record.id}-${item.key}-description`}>
+            <span id={`story-${record.id}-${item.key}-description`} className={styles.srOnly}>{observationDescription(item)}</span>
             <span className={styles.vitalName}><Icon name={ICONS[item.key]} size={19} /><span><strong>{item.label}</strong><small>{item.current !== null ? "Recorded this hour" : item.lastValue !== null ? `Last: ${display(item.lastValue, item.decimals)} ${item.unit} · ${item.ageHours} h ago` : "No readings yet"}</small></span></span>
             <span className={styles.vitalNumber}>{display(item.current, item.decimals)}<small>{item.current === null ? "Not recorded" : item.unit}</small></span>
             <span className={styles.comparison}>{item.reference === null ? <small>Building reference</small> : <><span>{display(item.reference, item.decimals)}</span><Icon name="arrow" size={16} /><strong>{display(item.current, item.decimals)}</strong></>}</span>

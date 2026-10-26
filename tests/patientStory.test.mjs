@@ -81,3 +81,49 @@ test("a copied observation summary preserves missingness and prototype context",
   assert.match(text, /38\.1 °C.*1 h/);
   assert.doesNotMatch(text, /sepsis detected|healthy|safe to wait/i);
 });
+
+test("reading descriptions include the current value, reference and signed change", () => {
+  assert.equal(typeof story.observationDescription, "function");
+  const item = story.patientSnapshot([hour(0, 80), hour(1, 82), hour(2, 84), hour(12, 113)], 3).observations[0];
+  const text = story.observationDescription(item);
+  assert.match(text, /113 bpm.*this hour/i);
+  assert.match(text, /initial reference.*82 bpm/i);
+  assert.match(text, /31 bpm above/i);
+});
+
+test("missing-reading descriptions distinguish the last observation from the current hour", () => {
+  assert.equal(typeof story.observationDescription, "function");
+  const item = story.patientSnapshot([hour(0, 80), hour(1, 82), hour(2, 84), hour(8, null)], 3).observations[0];
+  const text = story.observationDescription(item);
+  assert.match(text, /no reading at this hour/i);
+  assert.match(text, /last recorded.*84 bpm.*6 hours earlier/i);
+  assert.match(text, /no current comparison/i);
+  assert.doesNotMatch(text, /above|below|unchanged/i);
+});
+
+test("reading descriptions handle an unavailable reference and an empty history", () => {
+  assert.equal(typeof story.observationDescription, "function");
+  const snapshot = story.patientSnapshot([hour(0, 80)], 0);
+  assert.match(story.observationDescription(snapshot.observations[0]), /not enough reference readings/i);
+  const missing = story.observationDescription(snapshot.observations[1]);
+  assert.match(missing, /no earlier reading/i);
+  assert.doesNotMatch(missing, /null|undefined|NaN/);
+});
+
+test("oxygen changes use percentage points and zero changes are not called rises", () => {
+  assert.equal(typeof story.observationDescription, "function");
+  const rows = [0, 1, 2, 12].map((at) => ({ ...hour(at, 80), spo2: at === 12 ? 93 : 96 }));
+  const snapshot = story.patientSnapshot(rows, 3);
+  const oxygen = story.observationDescription(snapshot.observations[3]);
+  assert.match(oxygen, /3 percentage points below/i);
+  assert.doesNotMatch(oxygen, /3 % below/);
+  assert.match(story.observationDescription(snapshot.observations[0]), /unchanged/i);
+});
+
+test("reading descriptions preserve fractional medians and measured values", () => {
+  const rows = [hour(0, 80), hour(1, 81), hour(2, 84), hour(3, 90), hour(12, 100.5)];
+  const text = story.observationDescription(story.patientSnapshot(rows, 4).observations[0]);
+  assert.match(text, /100\.5 bpm.*this hour/i);
+  assert.match(text, /initial reference.*82\.5 bpm/i);
+  assert.match(text, /18 bpm above/i);
+});
