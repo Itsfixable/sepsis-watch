@@ -95,7 +95,7 @@ function DemoSession({ record }: { record: ReplayRecord }) {
         <StatusLight risk={current?.risk ?? null} caption={`Hour ${currentHour}`} illustrative />
       </div>
 
-      <DataTable rows={rows.map((r) => ({ ...r, key: String(r.hour), time: `Hour ${r.hour}` }))} caption="Revealed synthetic observations; dashes indicate missing measurements" illustrative />
+      <DataTable rows={rows.map((r) => ({ ...r, key: String(r.hour), time: `Hour ${r.hour}` }))} caption="Revealed synthetic observations; dashes indicate missing measurements" illustrative timeLabel="Simulated hour" />
       <p className={styles.safety}>A research prototype, not a medical device. A low illustrative score does not mean someone is well. If someone seems seriously unwell, seek medical help regardless of this display.</p>
       <section className="replay-promo" aria-label="Explore timelines">
         <div className="promo-icon"><Icon name="replay" size={20} /></div>

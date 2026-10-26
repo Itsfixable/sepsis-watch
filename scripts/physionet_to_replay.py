@@ -193,7 +193,7 @@ def main():
         "label": args.label or "Patient {}".format(patient_id),
         "description": args.description
         or "De-identified ICU record {} from the PhysioNet/Computing in Cardiology Challenge 2019, "
-        "scored hour by hour by the SepsisWatch model.".format(patient_id),
+        "with supplied hourly scores.".format(patient_id),
         "source": "physionet2019",
         "age": None if age is None else int(round(age)),
         "sex": None if gender is None else ("M" if gender == 1 else "F"),
