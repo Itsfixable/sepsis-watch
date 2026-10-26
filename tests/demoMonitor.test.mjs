@@ -71,7 +71,7 @@ test("snapshot reveals only arrived observations and preserves a missing current
   assert.equal(missing.tiles.tempC.value, null);
   assert.match(missing.tiles.tempC.note, /not recorded.*38\.1 °C.*1 h earlier/i);
   assert.equal(missing.tiles.heartRate.value, 113);
-  assert.equal(missing.current.risk, 0.62);
+  assert.equal(missing.current.risk, 0.623);
 });
 
 test("snapshot does not invent earlier measurements or a missing score", () => {
