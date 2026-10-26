@@ -60,6 +60,7 @@ export default function AboutPage() {
           <h1 id="project-title">See changing vitals<br />in context.</h1>
           <p className="project-lead">A student research prototype exploring how care teams and caregivers could review changing vital signs during an infection. Try four vital signs, their history, and illustrative warning scores using synthetic patients.</p>
           <div className="project-actions"><Link className="button button-primary" href="/monitor">Open monitor<Icon name="arrow" size={16} /></Link><Link className="button" href="/replay">Explore timelines</Link></div>
+          <p className="project-data-note">Patients A–C and their scores are invented for the demo. The separate <Link href="/research">Research page</Link> tests a trained model on real, de-identified ICU records.</p>
         </div>
         <ProjectPreview replays={replays} />
       </section>

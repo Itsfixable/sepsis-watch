@@ -100,7 +100,7 @@ export function parseResearchBundle(modelText: string, reportText: string, examp
     return record as unknown as ResearchRecord;
   });
   if (records[0].inferredOnsetHour === null || records[1].inferredOnsetHour !== null) fail("example outcome groups");
-  return { modelName: model.algorithm as string, modelSha256, report: report as unknown as ResearchReport, records };
+  return { modelName: model.algorithm as string, modelSha256, imputation: [...model.imputation as number[]], report: report as unknown as ResearchReport, records };
 }
 
 export function loadResearchBundle() {

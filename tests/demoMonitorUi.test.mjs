@@ -45,7 +45,8 @@ test("demo Monitor renders labeled synthetic data with only the first 24 observa
   assert.match(words, /every 3 seconds/);
   assert.match(words, /Illustrative score/);
   assert.match(words, /Pause/);
-  assert.match(words, /Reset demo/);
+  assert.match(words, /Reset to hour 23/);
+  assert.match(words, /Hour 0 is the first observation/);
   assert.match(html, /<th[^>]*>Simulated hour<\/th>/);
   const table = html.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
   assert.equal((table.match(/<tr>/g) ?? []).length, 24);
@@ -145,4 +146,25 @@ test("patient story distinguishes no history from a timestamped earlier measurem
   const context = text(html.match(/<div class="missingNote">([\s\S]*?)<\/div><\/div>/)[1]);
   assert.match(context, /Temperature.*No earlier reading available/);
   assert.doesNotMatch(context, /null|undefined|NaN/);
+});
+
+test("timeline comparison and summary agree on small changes and singular wording", () => {
+  const { PatientStory } = loadSource(path.join(root, "src/components/PatientStory.tsx"));
+  const record = { ...patient, hours: patient.hours.map((row, i) => ({ ...row, risk: i === 12 ? .7 : null })) };
+  const html = renderToStaticMarkup(React.createElement(PatientStory, { replays: [record] }));
+  const temp = html.match(/<button[^>]*aria-label="Inspect Temperature trend"[\s\S]*?<\/button>/)[0];
+  assert.match(text(temp), /36\.95/);
+  assert.match(text(temp), /\+0\.05/);
+  assert.match(text(html), /1 current reading differs/);
+  assert.doesNotMatch(text(html), /1 current readings differ/);
+});
+
+test("timeline exposes adjacent-hour controls with correct initial boundaries", () => {
+  const { PatientStory } = loadSource(path.join(root, "src/components/PatientStory.tsx"));
+  const record = { ...patient, hours: [{ ...patient.hours[0], risk: .7 }] };
+  const html = renderToStaticMarkup(React.createElement(PatientStory, { replays: [record] }));
+  assert.match(html, /<button[^>]*aria-label="Previous timeline hour"[^>]*disabled/);
+  assert.match(html, /<button[^>]*aria-label="Next timeline hour"[^>]*disabled/);
+  assert.match(text(html), /Complete/);
+  assert.match(text(html), /Restart/);
 });

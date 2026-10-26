@@ -35,3 +35,25 @@ export function researchSnapshot(record: ResearchRecord, selectedIndex: number) 
   return { current: record.hours[index], visible: record.hours.slice(0, index + 1),
     snapshot: patientSnapshot(record.hours, index)!, summary: observationSummary(replay, index) };
 }
+
+/** A display-only scale. Pass the revealed prefix, never the complete record. */
+export function researchChartScale(visible: ReplayHour[], threshold: number | null, zoomed: boolean) {
+  let upper = 1;
+  if (zoomed) {
+    const maximum = visible.reduce((max, row) => Math.max(max, row.risk ?? 0), threshold ?? 0);
+    upper = Math.min(1, Math.max(.02, Math.ceil(maximum * 1.2 * 100) / 100));
+  }
+  return { domain: [0, upper] as [number, number],
+    ticks: Array.from({ length: 6 }, (_, index) => Number((upper * index / 5).toFixed(3))) };
+}
+
+/** Retrospective navigation only; this never feeds the chart or model. */
+export function firstResearchScoreIndex(hours: ReplayHour[]): number | null {
+  const index = hours.findIndex(row => row.risk !== null);
+  return index < 0 ? null : index;
+}
+
+/** Display only; exact exported values stay available in the observations table. */
+export function formatResearchScore(value: unknown): string {
+  return typeof value === "number" && Number.isFinite(value) ? value.toFixed(3) : "—";
+}

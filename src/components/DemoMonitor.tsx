@@ -46,6 +46,7 @@ function DemoSession({ record }: { record: ReplayRecord }) {
   const finalHour = record.hours.at(-1)!.hour;
   const currentHour = current?.hour ?? 0;
   const firstHour = rows[0]?.hour ?? 0;
+  const resetHour = record.hours[Math.min(24, total) - 1].hour;
   const domain: [number, number] = firstHour === currentHour ? [firstHour, firstHour + 1] : [firstHour, currentHour];
 
   useEffect(() => {
@@ -60,13 +61,14 @@ function DemoSession({ record }: { record: ReplayRecord }) {
         <div className={styles.streamState}>
           <p role="status"><span className={`status-dot ${session.playing ? "dot-good" : ""}`} />{complete ? "Demo complete" : session.playing ? "Demo running" : "Demo paused"}</p>
           <span id="demo-pace">One simulated hour every 3 seconds · first {Math.min(24, total)} observations preloaded</span>
-          <span id="demo-reset-help">Reset returns to the first {Math.min(24, total)} observations and pauses.</span>
+          <span id="demo-reset-help">Reset to hour {resetHour} restores the first {Math.min(24, total)} observations and pauses. Press Resume to continue.</span>
+          <span>Hour 0 is the first observation. Hour {currentHour} is observation {rows.length} of {total}.</span>
         </div>
         <div className={styles.buttons}>
           <button type="button" className="button button-primary" onClick={() => dispatch({ type: "toggle", length: total })} disabled={complete} aria-describedby="demo-pace">
             {complete ? "Completed" : session.playing ? "Pause" : "Resume"}
           </button>
-          <button type="button" className="button" aria-describedby="demo-reset-help" onClick={() => dispatch({ type: "restart", length: total })}><Icon name="refresh" size={15} />Reset demo</button>
+          <button type="button" className="button" aria-describedby="demo-reset-help" onClick={() => dispatch({ type: "restart", length: total })}><Icon name="refresh" size={15} />Reset to hour {resetHour}</button>
         </div>
       </div>
 
