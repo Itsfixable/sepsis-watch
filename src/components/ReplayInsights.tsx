@@ -1,5 +1,4 @@
-// Two panels under the replay chart: what moved away from this patient's
-// normal, and the warning signs a person can check for themselves.
+// Historical reference comparisons and general sepsis awareness information.
 
 import { baselineReady, changesFromBaseline } from "@/lib/baseline";
 import { NEWS2_ALERT_AT } from "@/lib/news2";
@@ -24,19 +23,16 @@ type Props = {
 
 export function ReplayInsights({ hours, index, level, news2 }: Props) {
   const changes = changesFromBaseline(hours, index);
-  const warning = level === "yellow" || level === "red";
 
   return (
     <div className="insight-grid">
       <section className="insight-panel" aria-labelledby="changes-title">
-        <h2 id="changes-title">What changed from normal</h2>
+        <h2 id="changes-title">Changes from the initial reference</h2>
         {!baselineReady(index) ? (
-          <p className="insight-note">Learning this patient&apos;s normal from their first 12 hours.</p>
+          <p className="insight-note">Building a reference from the first 12 hourly records. This is not an established healthy baseline.</p>
         ) : changes.length === 0 ? (
           <p className="insight-note">
-            {warning
-              ? "No single vital has moved far yet, so the warning comes from small changes in several at once."
-              : "All four vitals are close to this patient's own normal."}
+            No changes meet this panel&apos;s comparison criteria, or there are too few readings. This does not establish that the patient is well.
           </p>
         ) : (
           <ul className="change-list">
@@ -48,20 +44,22 @@ export function ReplayInsights({ hours, index, level, news2 }: Props) {
             ))}
           </ul>
         )}
+        <p className="insight-footer">These comparisons use the latest available reading for each vital, which may be older than the selected hour. They do not explain how the supplied score was generated.</p>
         <p className="insight-footer">
-          Standard nurse checklist (NEWS2, four vitals): <strong>{news2 ?? "--"}</strong>
-          {news2 !== null && news2 >= NEWS2_ALERT_AT ? " · at its alert level" : ` · alerts at ${NEWS2_ALERT_AT}`}
+          Four-vital NEWS2 comparison (partial score): <strong>{news2 ?? "--"}</strong>
+          {news2 !== null && news2 >= NEWS2_ALERT_AT ? " · at the demo threshold" : ` · demo threshold ${NEWS2_ALERT_AT}`}
         </p>
+        <p className="insight-footer">This comparison uses oxygen saturation scale 1 and carries earlier measurements forward. It omits blood pressure, consciousness or new confusion, and supplemental oxygen use. It is not a full clinical NEWS2 assessment.</p>
       </section>
       <section className="insight-panel" data-urgent={level === "red" || undefined} aria-labelledby="signs-title">
         <h2 id="signs-title">{level === "red" ? "Check for these signs now" : "Sepsis warning signs to check"}</h2>
         <p className="insight-note">
           {level === "red"
             ? "If the patient has any of these, get medical help right away and ask: \"Could this be sepsis?\""
-            : "The score is one input. Look at the patient too: these signs matter even when the light is green."}
+            : "Seek medical help if someone seems seriously unwell, regardless of the score or light shown here."}
         </p>
         <ul className="sign-list">{SIGNS.map((s) => <li key={s}>{s}</li>)}</ul>
-        <p className="insight-footer">Signs from the CDC. SepsisWatch is an early warning, not a diagnosis.</p>
+        <p className="insight-footer">Signs from the <a href="https://www.cdc.gov/sepsis/about/index.html" target="_blank" rel="noreferrer" className="underline underline-offset-2">CDC</a>. SepsisWatch is a research prototype, not a validated medical tool.</p>
       </section>
     </div>
   );

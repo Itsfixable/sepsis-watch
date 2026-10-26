@@ -39,6 +39,7 @@ export function ReplayPlayer({ replays }: { replays: ReplayRecord[] }) {
 }
 
 function Player({ replay }: { replay: ReplayRecord }) {
+  const illustrative = replay.source === "synthetic";
   const hours = replay.hours;
   const lastIndex = hours.length - 1;
   const [index, setIndex] = useState(0);
@@ -76,8 +77,8 @@ function Player({ replay }: { replay: ReplayRecord }) {
   }
 
   const markers: ChartMarker[] = [];
-  if (redHour !== null && current.hour >= redHour) markers.push({ x: redHour, label: `High risk · h${redHour}`, tone: "critical" });
-  if (news2Hour !== null && current.hour >= news2Hour) markers.push({ x: news2Hour, label: `Nurse checklist · h${news2Hour}`, tone: "warning" });
+  if (redHour !== null && current.hour >= redHour) markers.push({ x: redHour, label: `High score · h${redHour}`, tone: "critical" });
+  if (news2Hour !== null && current.hour >= news2Hour) markers.push({ x: news2Hour, label: `Partial NEWS2 · h${news2Hour}`, tone: "warning" });
   if (onset !== null && current.hour >= onset) markers.push({ x: onset, label: `${onsetLabel} · h${onset}`, tone: "neutral" });
 
   const tiles = Object.fromEntries(VITALS.map(({ key }) => {
@@ -120,27 +121,27 @@ function Player({ replay }: { replay: ReplayRecord }) {
         <button type="button" className="button" onClick={() => jumpTo(lastIndex)}>View result<Icon name="arrow" size={13} /></button>
       </div>
 
-      {atEnd && <div role="status" className="replay-result" data-outcome={summary.outcome}><Icon name="info" size={19} /><div><h2>{summary.text}</h2><p className="replay-compare">{news2Comparison(redHour, news2Hour)}</p><p>{replay.source === "synthetic" ? "Synthetic demonstration. These values illustrate the dashboard and do not validate clinical performance." : "Replayed from a de-identified PhysioNet 2019 record with SepsisWatch model scores."}</p></div></div>}
+      {atEnd && <div role="status" className="replay-result" data-outcome={summary.outcome}><Icon name="info" size={19} /><div><h2>{summary.text}</h2><p className="replay-compare">{news2Comparison(redHour, news2Hour)}</p><p>{replay.source === "synthetic" ? "Synthetic demonstration. These values illustrate the dashboard and do not validate clinical performance." : "Replayed from a de-identified PhysioNet 2019 record with supplied model scores."}</p></div></div>}
 
       <VitalTiles values={tiles} history={shown} sourceLabel={replay.source === "synthetic" ? "Synthetic observation" : "Hospital record"} />
       <div className="monitor-grid">
         <section aria-labelledby="replay-trend-title" className="trend-panel">
-          <div className="panel-heading"><div><h2 id="replay-trend-title">Risk over time</h2><p className="panel-subtitle">{replay.label} · Hour {firstHour} to {finalHour}</p></div><span className="replay-heading-tag"><Icon name="replay" size={12} />{replay.source === "synthetic" ? "Scenario replay" : "Historical replay"}</span></div>
-          <div className="chart-legend"><span /><span>Risk score</span><span className="chart-legend-note">{replay.source === "synthetic" ? "Synthetic demonstration" : "PhysioNet 2019 record"}</span></div>
-          <RiskChart points={shown.map((h) => ({ x: h.hour, risk: h.risk }))} xDomain={firstHour === finalHour ? [firstHour, finalHour + 1] : [firstHour, finalHour]} xTicks={hourTicks(firstHour, finalHour)} formatTick={(x) => `h${x}`} formatX={(x) => `Hour ${x}`} markers={markers} showEndDot ariaLabel={`Risk score for ${replay.label} up to hour ${current.hour}. ${atEnd ? summary.text : ""}`} />
+          <div className="panel-heading"><div><h2 id="replay-trend-title">{illustrative ? "Illustrative score over time" : "Risk over time"}</h2><p className="panel-subtitle">{replay.label} · Hour {firstHour} to {finalHour}</p></div><span className="replay-heading-tag"><Icon name="replay" size={12} />{illustrative ? "Scenario replay" : "Historical replay"}</span></div>
+          <div className="chart-legend"><span /><span>{illustrative ? "Illustrative score" : "Risk score"}</span><span className="chart-legend-note">{illustrative ? "Synthetic demonstration" : "PhysioNet 2019 record"}</span></div>
+          <RiskChart points={shown.map((h) => ({ x: h.hour, risk: h.risk }))} xDomain={firstHour === finalHour ? [firstHour, finalHour + 1] : [firstHour, finalHour]} xTicks={hourTicks(firstHour, finalHour)} formatTick={(x) => `h${x}`} formatX={(x) => `Hour ${x}`} markers={markers} showEndDot illustrative={illustrative} ariaLabel={`${illustrative ? "Illustrative score" : "Risk score"} for ${replay.label} up to hour ${current.hour}. ${atEnd ? summary.text : ""}`} />
           <div className="chart-footer"><Legend markers={markers} onsetLabel={onsetLabel} /><span>{shown.length} of {hours.length} readings</span></div>
         </section>
-        <StatusLight risk={current.risk} caption={`Hour ${current.hour}`} noScoreMessage="No risk score was recorded for this hour." />
+        <StatusLight risk={current.risk} caption={`Hour ${current.hour}`} noScoreMessage="No risk score was recorded for this hour." illustrative={illustrative} />
       </div>
       <ReplayInsights hours={hours} index={index} level={riskLevel(current.risk)} news2={news2Scores[index]} />
-      <DataTable caption={`Hourly data for ${replay.label} up to hour ${current.hour}`} rows={shown.map((h) => ({ ...h, key: String(h.hour), time: `Hour ${h.hour}` }))} />
+      <DataTable caption={`Hourly data for ${replay.label} up to hour ${current.hour}`} rows={shown.map((h) => ({ ...h, key: String(h.hour), time: `Hour ${h.hour}` }))} illustrative={illustrative} timeLabel={illustrative ? "Simulated hour" : "Hour"} />
     </>
   );
 }
 
 function Legend({ markers, onsetLabel }: { markers: ChartMarker[]; onsetLabel: string }) {
   if (!markers.length) return <span><Icon name="clock" size={12} />1× plays one hour per second</span>;
-  return <ul className="replay-legend">{markers.map((m) => <li key={m.tone}>{m.tone === "critical" ? <span aria-hidden="true" className="h-3 w-0.5 bg-critical" /> : m.tone === "warning" ? <span aria-hidden="true" className="h-3 w-0 border-l-2 border-dashed border-warning" /> : <span aria-hidden="true" className="h-3 w-0 border-l-2 border-dotted border-ink" />}{m.tone === "critical" ? "High-risk threshold reached" : m.tone === "warning" ? "Nurse checklist (NEWS2) alert" : onsetLabel}</li>)}</ul>;
+  return <ul className="replay-legend">{markers.map((m) => <li key={m.tone}>{m.tone === "critical" ? <span aria-hidden="true" className="h-3 w-0.5 bg-critical" /> : m.tone === "warning" ? <span aria-hidden="true" className="h-3 w-0 border-l-2 border-dashed border-warning" /> : <span aria-hidden="true" className="h-3 w-0 border-l-2 border-dotted border-ink" />}{m.tone === "critical" ? "High-score threshold reached" : m.tone === "warning" ? "Four-vital NEWS2 (partial score) threshold" : onsetLabel}</li>)}</ul>;
 }
 
 function PlayIcon() {

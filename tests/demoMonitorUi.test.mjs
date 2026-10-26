@@ -46,6 +46,7 @@ test("demo Monitor renders labeled synthetic data with only the first 24 observa
   assert.match(words, /Illustrative score/);
   assert.match(words, /Pause/);
   assert.match(words, /Restart/);
+  assert.match(html, /<th[^>]*>Simulated hour<\/th>/);
   const table = html.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
   assert.equal((table.match(/<tr>/g) ?? []).length, 24);
   assert.match(text(table), /Hour 23/);
@@ -92,4 +93,34 @@ test("local API monitor identifies itself as a synthetic-data demonstration", ()
   assert.match(text(html), /Local API demonstration/);
   assert.match(text(html), /Synthetic data only/);
   assert.doesNotMatch(text(html), /Bedside unit|Sepsis risk score/);
+});
+
+test("local timestamp observations do not inherit the public demo's hour heading", () => {
+  const { LiveMonitor } = loadSource(path.join(root, "src/components/LiveMonitor.tsx"));
+  const client = new QueryClient();
+  client.setQueryData(["readings"], [{
+    timestamp: "2026-10-25T12:00:00Z", receivedAt: "2026-10-25T12:00:00Z",
+    heartRate: 80, respRate: 16, tempC: 37, spo2: 98, risk: 0.2,
+  }]);
+  const html = renderToStaticMarkup(React.createElement(QueryClientProvider, { client }, React.createElement(LiveMonitor)));
+  assert.match(html, /<th[^>]*>Time<\/th>/);
+  assert.match(html, /<th[^>]*>Demo score<\/th>/);
+  assert.doesNotMatch(html, /<th[^>]*>Simulated hour<\/th>/);
+  assert.match(html, /<tbody><tr>/);
+});
+
+test("detailed synthetic replay uses illustrative status instead of clinical-risk guidance", () => {
+  const { ReplayPlayer } = loadSource(path.join(root, "src/components/ReplayPlayer.tsx"));
+  const html = renderToStaticMarkup(React.createElement(ReplayPlayer, { replays: [patient] }));
+  assert.match(html, /aria-label="Illustrative score status"/);
+  assert.doesNotMatch(text(html), /Continue routine monitoring|Sepsis risk score/);
+  assert.match(html, /<th[^>]*>Demo score<\/th>/);
+});
+
+test("research-record replay retains its separate source and score labels", () => {
+  const { ReplayPlayer } = loadSource(path.join(root, "src/components/ReplayPlayer.tsx"));
+  const html = renderToStaticMarkup(React.createElement(ReplayPlayer, { replays: [{ ...patient, source: "physionet2019" }] }));
+  assert.match(text(html), /Hospital record/);
+  assert.match(html, /<th[^>]*>Risk score<\/th>/);
+  assert.doesNotMatch(html, /<th[^>]*>Demo score<\/th>/);
 });

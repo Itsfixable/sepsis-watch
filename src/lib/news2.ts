@@ -1,12 +1,10 @@
-// NEWS2 (National Early Warning Score 2, Royal College of Physicians, 2017) is
-// the checklist score nurses use at the bedside. The full score also needs blood
-// pressure, alertness and whether the patient is on oxygen. The bedside unit
-// can't measure those, so this is the four-vital part only (SpO2 uses scale 1).
-// It is the "no AI" baseline the model has to beat.
+// Four-vital comparison based on NEWS2 (Royal College of Physicians, 2017).
+// This partial score omits blood pressure, consciousness/new confusion and
+// supplemental oxygen use. SpO2 uses scale 1. It is not full clinical NEWS2.
 
 import type { ReplayHour, Vitals } from "./types";
 
-/** A total of 5 or more is NEWS2's trigger for an urgent clinical review. */
+/** Demo comparison threshold; not a validated clinical trigger for this partial score. */
 export const NEWS2_ALERT_AT = 5;
 
 function respScore(rr: number) {
@@ -48,8 +46,8 @@ export function news2(v: Vitals): number | null {
 }
 
 /**
- * NEWS2 for every hour, carrying each vital forward from its last reading the
- * way a nurse's chart does (temperature is often taken only every few hours).
+ * Partial comparison per hour, carrying each vital forward from its last
+ * available reading. This demo convention may use stale measurements.
  */
 export function news2Series(hours: ReplayHour[]): (number | null)[] {
   const last: Vitals = { heartRate: null, respRate: null, tempC: null, spo2: null };
@@ -66,13 +64,14 @@ export function firstNews2AlertHour(hours: ReplayHour[]): number | null {
   return i >= 0 ? hours[i].hour : null;
 }
 
-/** One sentence comparing the model's first red hour with the NEWS2 alert. */
+/** Compare supplied-score and partial NEWS2 threshold crossings, not accuracy. */
 export function news2Comparison(redHour: number | null, news2Hour: number | null): string {
   const hrs = (n: number) => `${n} ${n === 1 ? "hour" : "hours"}`;
-  if (redHour === null && news2Hour === null) return "The standard nurse checklist (NEWS2) never reached its alert level either.";
-  if (news2Hour === null) return "The standard nurse checklist (NEWS2) never reached its alert level.";
-  if (redHour === null) return `The standard nurse checklist (NEWS2) alerted at hour ${news2Hour}.`;
-  if (news2Hour > redHour) return `The standard nurse checklist (NEWS2) alerted at hour ${news2Hour}, ${hrs(news2Hour - redHour)} later.`;
-  if (news2Hour < redHour) return `The standard nurse checklist (NEWS2) alerted first, at hour ${news2Hour}.`;
-  return "The standard nurse checklist (NEWS2) alerted at the same hour.";
+  const label = "The four-vital NEWS2 comparison (partial score)";
+  if (redHour === null && news2Hour === null) return `${label} did not reach its demo threshold either.`;
+  if (news2Hour === null) return `${label} did not reach its demo threshold.`;
+  if (redHour === null) return `${label} reached its demo threshold at hour ${news2Hour}.`;
+  if (news2Hour > redHour) return `${label} reached its demo threshold at hour ${news2Hour}, ${hrs(news2Hour - redHour)} later.`;
+  if (news2Hour < redHour) return `${label} reached its demo threshold first, at hour ${news2Hour}.`;
+  return `${label} reached its demo threshold at the same hour.`;
 }

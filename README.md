@@ -1,35 +1,39 @@
 # SepsisWatch
 
-**A student prototype for visualizing sepsis risk, with a proposed radar-assisted bedside system.** Congressional App Challenge 2026, Georgia's 7th district.
+**A student research prototype for exploring vital-sign changes with synthetic patient data.** Congressional App Challenge 2026, Georgia's 7th district.
 
-Open **http://localhost:3000/about** for the product overview and an interactive timeline preview.
+Visit [SepsisWatch](https://sepsis-watch.vercel.app/) or open **http://localhost:3000/about** after starting the app.
 Navigation is labeled Overview (`/about`), Monitor (`/monitor`), and Timelines (`/replay`).
-The root address (`/`) opens Timelines with Patient A selected. Choose **Start replay** to begin.
-Timelines includes shortcuts to key moments and the final result.
-Synthetic observations are labeled throughout and are not presented as sensor measurements.
+The root address (`/`) opens Overview. Timelines starts with Patient A at a key moment;
+choose **Replay from start** to follow the whole scenario. The **Open detailed comparison**
+link leads to `/replay/classic`, which includes the partial NEWS2 comparison and replay result.
 
-About 1.7 million US adults get sepsis each year, and more than 350,000 of them die or are
-discharged to hospice (CDC). Catching it early saves lives. SepsisWatch watches a patient's
-vital signs without touching them and raises an **early warning** when the risk is rising, so
-the care team can take a closer look sooner.
+Sepsis is a life-threatening response to an infection that can lead to organ damage.
+The [CDC explains the warning signs and need for prompt medical care](https://www.cdc.gov/sepsis/about/index.html).
+This project explores how to present changes in four vital signs and their history. The current
+app demonstrates the interface; it does not establish earlier detection or improved outcomes.
 
-> SepsisWatch gives an early warning to support a clinician's judgment. It does not diagnose
-> sepsis and is not a medical device.
+> All bundled patient records and scores are synthetic. No trained prediction model or bedside
+> sensor is connected to this app. SepsisWatch is not validated for medical use. A low score
+> must not delay seeking medical help.
 
-## How the system fits together
+## What works today
 
 ```
- Bedside sensors                    Raspberry Pi Zero                 This web app (Next.js)
- ─────────────────                  ─────────────────                 ──────────────────────
- 60 GHz mmWave radar ─ HR, RR ─┐
- Pulse oximeter ────── SpO2 ───┼──► collects one reading per hour ──► POST /api/readings
- Temperature probe ─── temp ───┘    + risk score from the model        │
-                                    (PyTorch transformer, Python)     ▼
-                                                                       Monitor page: live readings
-                                                                       Replay page: past stays
+Bundled synthetic JSON → browser demo → Monitor / Timelines
+
+Local development only:
+demo_pi.py → POST /api/readings → validation → temporary memory
+                                                   ↓
+                                    GET /api/readings → local Monitor
 ```
 
-The model stays in Python. The web app only **shows** its scores.
+The scripts generate or replay demo values; they do not run a trained prediction model.
+The public Monitor does not use the readings API. Each visitor gets a separate browser session.
+
+A proposed bedside unit would use radar for heart and breathing rates, plus a pulse oximeter
+and thermometer. That hardware, a trained model, and clinical evaluation remain future work.
+The proposed oximeter and thermometer would require contact; this is not a contactless system.
 
 ---
 
@@ -114,13 +118,29 @@ This mode has no authentication: keep it bound to localhost and do not expose it
 
 ### Watch a replay
 
-Open **http://localhost:3000/replay**, pick a patient, choose 1x, 2x or 4x, and press play.
-At the end it compares the first high score with simulated onset (synthetic scenarios) or recorded onset
-(hospital records). Use the key-moment buttons to jump directly to a warning or the result.
+Open **http://localhost:3000/replay**, pick a patient, and choose **Replay from start**.
+Use the speed selector, chapter buttons or slider, and select a vital to inspect its trend.
+The initial reference uses available readings from the first 12 hours, with at least three
+measurements per vital. It is not an established healthy baseline.
+
+**Open detailed comparison** leads to `/replay/classic`. Its result compares the first high
+supplied score with simulated onset, or an onset derived from a research record if one is imported.
+The bundled scenarios show interface behavior, not model accuracy.
+
+### The partial NEWS2 comparison
+
+The detailed replay sums four NEWS2 components: heart rate, respiratory rate, temperature and
+oxygen saturation (scale 1). It omits blood pressure, consciousness or new confusion, and
+supplemental oxygen use, so it is **not full clinical NEWS2**. See the
+[Royal College of Physicians guidance](https://www.rcp.ac.uk/resources/national-early-warning-score-news-2/).
+It carries the last available measurement forward for each vital; these inputs can be stale.
+The demo uses a threshold of 5 for comparison only. Earlier crossings do not demonstrate clinical
+benefit. A future model evaluation needs held-out records, missed-case and false-alarm reporting,
+and appropriate clinical baselines.
 
 ## Part 3: Check that everything is correct
 
-Before recording your video or submitting, run these. Both should finish with no errors.
+Before recording your video or submitting, run the checks below and review any failures.
 
 ```bash
 npm run lint
@@ -128,8 +148,8 @@ npm run lint
 
 **Lint** reads the code and points out mistakes and risky patterns.
 
-Run `npm test` to check replay outcomes, source-specific wording, threshold boundaries,
-and reading validation. Tests compile the domain modules in a temporary directory and clean up afterward.
+Run `npm test` to check replay outcomes, missing observations, demo-session progression,
+rendered components and API access controls. These are software checks, not clinical validation.
 
 ```bash
 npm run build
@@ -158,15 +178,18 @@ Your phone and Mac must be on the same Wi-Fi.
 3. On your phone, open `http://THAT-ADDRESS:3000` (for example `http://192.168.1.23:3000`).
    If macOS asks whether "node" may accept incoming connections, click **Allow**.
 
-## Part 4: Connect the Raspberry Pi
+## Part 4: Explore the local API
 
-See **[docs/API.md](docs/API.md)**. It has the exact JSON format plus curl and Python examples
-the Pi can copy.
+See **[docs/API.md](docs/API.md)** for the JSON format and localhost examples. The Python
+sender stands in for hardware. Production and Vercel reject both API methods; connecting a
+remote sensor would require a separate authenticated, persistent ingestion service.
 
-## Part 5: Add real patients to the Replay page
+## Part 5: Optional research-record conversion
 
-Until your model is trained, the Replay page shows three **synthetic** (made-up) patients,
-clearly labeled "Synthetic data". To replace them with real ones:
+The repo ships three synthetic patients and no trained model. The converter supports future
+research with de-identified PhysioNet records and scores supplied from a separate model.
+It does not train or evaluate that model. Follow the dataset's license and use requirements;
+do not upload private patient records.
 
 1. Download the PhysioNet 2019 Challenge data from
    [physionet.org/content/challenge-2019](https://physionet.org/content/challenge-2019/1.0.0/).
@@ -186,23 +209,23 @@ clearly labeled "Synthetic data". To replace them with real ones:
    python3 scripts/physionet_to_replay.py path/to/p000009.psv path/to/p000009_scores.csv --label "Patient 1"
    ```
 
-   This writes `data/replays/p000009.json`. Refresh the Replay page and it appears in the picker.
-4. To remove the synthetic patients, delete `data/replays/patient-a.json`, `patient-b.json` and
-   `patient-c.json`.
+   This writes `data/replays/p000009.json`. The Overview preview and `/replay/classic` load these
+   records; rebuild a production deployment after adding files. The public `/replay` patient story
+   and `/monitor` demo filter for synthetic records only. Keep the bundled synthetic scenarios
+   available for those pages.
 
 **How the onset hour is found:** in PhysioNet 2019, `SepsisLabel` switches to 1 six hours
 *before* sepsis onset, so the script uses the first row with `SepsisLabel = 1`, plus 6. That
-onset time comes from the hospital record (when infection was suspected and organ function
-worsened, under the Sepsis-3 definition). The Replay page calls this "recorded onset";
-it does not claim that it is the time a doctor recognized sepsis.
+time is an inference from the challenge labels, not the time a doctor recognized sepsis.
+If the first row is already positive, the true onset may be earlier; the converter prints a warning.
+The detailed replay calls this "recorded onset". Treat lead-time claims with care at record boundaries.
 
-Pick replay patients honestly. A patient where the warning came late or not at all, or a false
-alarm, shows judges you understand the model's limits, and the Replay page reports those cases
-plainly.
+Do not use selected examples as evidence of predictive accuracy. Report performance across a
+held-out dataset, including missed cases and false alarms, before making model-performance claims.
 
-## Part 6: Tune the warning thresholds
+## Part 6: Understand the demo thresholds
 
-Open `src/lib/thresholds.ts` and change these two numbers:
+The supplied scores use these illustrative thresholds in `src/lib/thresholds.ts`:
 
 ```ts
 export const RISK_THRESHOLDS = {
@@ -211,9 +234,10 @@ export const RISK_THRESHOLDS = {
 } as const;
 ```
 
-The status light, the chart's threshold lines and the replay result all read from this one
-file. Choose the numbers from your validation results after training: a lower red threshold
-catches sepsis earlier but raises more false alarms.
+These values demonstrate the interface and are not clinically selected cutoffs. The status
+classification and replay result use this shared configuration; the patient-story chart currently
+also displays 0.30 / 0.60 directly. If thresholds change, keep the chart labels and documentation
+in sync. A future trained model would need separate threshold selection and evaluation.
 
 ---
 
@@ -226,29 +250,36 @@ catches sepsis earlier but raises more false alarms.
 | `src/app/layout.tsx` | The frame around every page: fonts, top bar, footer disclaimer, page title. |
 | `src/app/providers.tsx` | Turns on TanStack Query, the library that fetches data and re-checks it every 10 seconds. |
 | `src/app/globals.css` | The light clinical-workspace theme, responsive layouts, chart styles and playback controls. |
-| `src/app/page.tsx` | Redirects the home address (`/`) to the patient timelines. |
-| `src/app/monitor/page.tsx` | The live monitor (`/monitor`). Shows the `LiveMonitor` component. |
-| `src/app/replay/page.tsx` | The replay page (`/replay`). Reads the replay files on the server and passes them to the player. |
-| `src/app/api/readings/route.ts` | The API. `POST` stores a reading from the Pi; `GET` returns all readings. |
+| `src/app/page.tsx` | Redirects the home address (`/`) to Overview (`/about`). |
+| `src/app/monitor/page.tsx` | Shows the browser demo, or the explicitly enabled local-only API demonstration. |
+| `src/app/replay/page.tsx` | Shows `PatientStory` with synthetic records. |
+| `src/app/replay/classic/page.tsx` | Shows the detailed replay with the partial NEWS2 comparison. |
+| `src/app/api/readings/route.ts` | Local-only API: validates/stores synthetic readings with `POST`, returns them with `GET`; both methods return 403 when disabled. |
 | `src/app/favicon.ico` | The little icon in the browser tab. |
 
 ### Building blocks (`src/components/`)
 
 | File | What it does |
 | ---- | ------------ |
-| `LiveMonitor.tsx` | The live monitor. Asks the API for readings every 10 seconds; shows the light, chart and tiles; warns if the Pi goes quiet for 90 minutes or the server can't be reached. |
-| `ReplayPlayer.tsx` | The replay page player: patient picker, play/pause, slider, 1x/2x/4x speed, chart markers and the end-of-replay result. |
+| `DemoMonitor.tsx` | Independent browser demo with 24 initial observations, timed progression, pause/resume and restart. |
+| `LiveMonitor.tsx` | Local-only Python/API demonstration. Polls every 10 seconds and shows connection or delayed-reading messages. |
+| `PatientStory.tsx` | Main Timelines view: synchronized panels, missing readings, initial references, vital trends and copyable observation summaries. |
+| `ReplayPlayer.tsx` | Detailed comparison player: patient picker, playback, slider, speed, chart markers and result. |
 | `StatusLight.tsx` | The early-warning panel: risk score, labeled status, threshold scale and guidance. Status is conveyed with both color and text. |
-| `RiskChart.tsx` | The risk-score line chart with the threshold lines and the "turned red" / "sepsis recognized" markers. |
+| `RiskChart.tsx` | Score chart with thresholds and caller-supplied markers. Onset labels distinguish synthetic and research records. |
 | `VitalTiles.tsx` | The four number tiles: heart rate, breathing rate, temperature (°C and °F), SpO₂. |
 | `DataTable.tsx` | The expandable "Recorded observations" table below the dashboard, with every hour's numbers. |
-| `SiteHeader.tsx` | The top bar with the SepsisWatch name and the Monitor / Replay links. |
+| `SiteHeader.tsx` | Navigation for Overview, Monitor and Timelines. |
 
 ### Logic and shared code (`src/lib/`)
 
 | File | What it does |
 | ---- | ------------ |
 | `types.ts` | The shapes of all shared data (a reading, a replay file, and so on). |
+| `demoMonitor.ts` | Bounded playback state and revealed-observation snapshots for the public demo. |
+| `monitorMode.ts` | Enables ingestion only with the explicit local-development flag, never in production or on Vercel. |
+| `patientStory.ts` | Initial-reference comparisons and summaries that preserve missing current values. |
+| `news2.ts` | Partial four-vital comparison, carry-forward convention and demo threshold crossings. |
 | `thresholds.ts` | **The yellow and red thresholds** and the words shown for each level. Tune here. |
 | `validateReading.ts` | Checks every reading the Pi sends and explains exactly what is wrong if it is rejected. |
 | `readingsStore.ts` | Keeps readings in the server's memory (no database yet). |
@@ -262,9 +293,9 @@ catches sepsis earlier but raises more false alarms.
 | ---- | ------------ |
 | `data/replays/*.json` | One file per replay patient. The three included patients are synthetic. |
 | `scripts/physionet_to_replay.py` | Turns a PhysioNet 2019 `.psv` file + your model's score CSV into a replay file. |
-| `scripts/make_fake_replays.py` | Re-creates the three synthetic demo patients. |
+| `scripts/make_demo_data.py` | Re-creates the three synthetic demo patients. |
 | `scripts/demo_pi.py` | Sends synthetic observations to the explicitly enabled local API demonstration. |
-| `docs/API.md` | How the Pi talks to the API, with curl and Python examples. |
+| `docs/API.md` | Local-only synthetic ingestion, with curl and Python examples. |
 
 The Python scripts use only Python's built-in libraries, so there is nothing extra to install.
 
@@ -284,10 +315,11 @@ The Python scripts use only Python's built-in libraries, so there is nothing ext
 
 ## Limitations (good to say in your video)
 
-- **Early warning, not diagnosis.** The light means "look closer," never "this patient has sepsis."
+- **No demonstrated clinical benefit.** Illustrative scores are not probabilities, diagnoses or validated warnings. A low score does not mean someone is well.
 - **Public demo, not live monitoring.** The public Monitor uses bundled synthetic observations in each browser; it does not accept readings or share state between visitors.
 - **Local API has no database or authentication.** Explicitly enabled local development retains readings only in one server's memory. Keep it on localhost with synthetic data. It is disabled in production and on Vercel; a real hosted service would need persistent storage and authenticated access.
-- **Synthetic replays** are labeled as such until real PhysioNet records and model scores are added.
+- **No connected trained model or hardware.** The bundled replays are synthetic; model training, hardware integration and clinical evaluation remain future work.
+- **Partial NEWS2 only.** The four-vital comparison omits required clinical inputs and can carry old measurements forward.
 
 ## Built with
 

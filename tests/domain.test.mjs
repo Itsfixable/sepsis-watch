@@ -84,5 +84,5 @@ test("four-vital NEWS2 scores the bands and carries vitals forward", () => {
   assert.deepEqual(news2Series(hours), [0, 6]);
   assert.equal(firstNews2AlertHour(hours), 1);
   assert.match(news2Comparison(1, 4), /3 hours later/);
-  assert.match(news2Comparison(4, 1), /alerted first/);
+  assert.match(news2Comparison(4, 1), /threshold first/);
 });
