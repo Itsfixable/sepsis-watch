@@ -1,6 +1,6 @@
 # SepsisWatch
 
-**A student research prototype for exploring vital-sign changes with synthetic patient data.** Congressional App Challenge 2026, Georgia's 7th district.
+**A student research prototype with synthetic vital-sign demos and a separate retrospective ICU model experiment.** Congressional App Challenge 2026, Georgia's 7th district.
 
 Visit [SepsisWatch](https://sepsis-watch.vercel.app/) or open **http://localhost:3000/about** after starting the app.
 Navigation is labeled Overview (`/about`), Monitor (`/monitor`), and Timelines (`/replay`).
@@ -13,9 +13,9 @@ The [CDC explains the warning signs and need for prompt medical care](https://ww
 This project explores how to present changes in four vital signs and their history. The current
 app demonstrates the interface; it does not establish earlier detection or improved outcomes.
 
-> All bundled patient records and scores are synthetic. No trained prediction model or bedside
-> sensor is connected to this app. SepsisWatch is not validated for medical use. A low score
-> must not delay seeking medical help.
+> Monitor and Timelines use synthetic records and illustrative scores. The separate `/research`
+> page evaluates an offline-trained model on real de-identified ICU records. Neither is live
+> clinical monitoring. SepsisWatch is not validated for medical use; a low score must not delay help.
 
 ## What works today
 
@@ -28,12 +28,24 @@ demo_pi.py → POST /api/readings → validation → temporary memory
                                     GET /api/readings → local Monitor
 ```
 
-The scripts generate or replay demo values; they do not run a trained prediction model.
+The demo scripts generate or replay illustrative values; they do not run the research model.
 The public Monitor does not use the readings API. Each visitor gets a separate browser session.
 
 A proposed bedside unit would use radar for heart and breathing rates, plus a pulse oximeter
-and thermometer. That hardware, a trained model, and clinical evaluation remain future work.
+and thermometer. Hardware integration and clinical evaluation remain future work.
 The proposed oximeter and thermometer would require contact; this is not a contactless system.
+
+### Separate research notebook
+
+Open `/research` from Overview or Timelines to inspect a logistic-regression experiment with
+four vitals and explicit missingness features. Training, validation and internal testing use
+disjoint hospital A records; hospital B is an external test. The page reports errors and coverage,
+not just successful examples. Its two held-out records have precomputed scores, no synthetic
+warning bands, and no individual likelihood claims. Gemini is not enabled.
+
+See [data/research/README.md](data/research/README.md) for the fixed protocol, source/license
+notices, limitations and commands to reproduce the model, metrics and examples. Python and
+scikit-learn are offline development dependencies; Vercel only renders exported JSON artifacts.
 
 ---
 
@@ -186,10 +198,10 @@ remote sensor would require a separate authenticated, persistent ingestion servi
 
 ## Part 5: Optional research-record conversion
 
-The repo ships three synthetic patients and no trained model. The converter supports future
-research with de-identified PhysioNet records and scores supplied from a separate model.
-It does not train or evaluate that model. Follow the dataset's license and use requirements;
-do not upload private patient records.
+The legacy converter below is separate from the reproducible `/research` experiment described
+in [data/research/README.md](data/research/README.md). It converts de-identified PhysioNet records
+and independently supplied scores; it does not train or evaluate a model. Follow the dataset's
+license and use requirements; do not upload private patient records.
 
 1. Download the PhysioNet 2019 Challenge data from
    [physionet.org/content/challenge-2019](https://physionet.org/content/challenge-2019/1.0.0/).
@@ -318,7 +330,7 @@ The Python scripts use only Python's built-in libraries, so there is nothing ext
 - **No demonstrated clinical benefit.** Illustrative scores are not probabilities, diagnoses or validated warnings. A low score does not mean someone is well.
 - **Public demo, not live monitoring.** The public Monitor uses bundled synthetic observations in each browser; it does not accept readings or share state between visitors.
 - **Local API has no database or authentication.** Explicitly enabled local development retains readings only in one server's memory. Keep it on localhost with synthetic data. It is disabled in production and on Vercel; a real hosted service would need persistent storage and authenticated access.
-- **No connected trained model or hardware.** The bundled replays are synthetic; model training, hardware integration and clinical evaluation remain future work.
+- **Research is not clinical validation.** The separate offline model is evaluated retrospectively on ICU data, not at home. Its outputs are uncalibrated, its false alerts and missed cases are reported, and it is not connected to live monitoring. Hardware integration and clinical evaluation remain future work.
 - **Partial NEWS2 only.** The four-vital comparison omits required clinical inputs and can carry old measurements forward.
 
 ## Built with

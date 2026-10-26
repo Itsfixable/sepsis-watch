@@ -181,6 +181,6 @@ function Story({ record }: { record: ReplayRecord }) {
         <p className={styles.safetyNote}><Icon name="info" size={17} /><span><strong>A research prototype, not a medical device.</strong> A low score does not mean someone is well. If someone seems seriously unwell, seek medical help regardless of this display.</span></p>
       </aside>
     </div>
-    <div className={styles.bottomNote}><span><Icon name="check" size={15} />All panels follow the same selected hour.</span><Link href="/replay/classic">Open detailed comparison <Icon name="arrow" size={15} /></Link></div>
+    <div className={styles.bottomNote}><span><Icon name="check" size={15} />All panels follow the same selected hour.</span><Link href="/research">Explore the separate research model <Icon name="arrow" size={15} /></Link><Link href="/replay/classic">Open detailed comparison <Icon name="arrow" size={15} /></Link></div>
   </section>;
 }

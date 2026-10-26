@@ -41,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <footer className="site-footer">
             <div className="footer-inner">
               <div><span className="footer-label">Built for earlier awareness.</span><p>SepsisWatch · Congressional App Challenge</p></div>
-              <p className="footer-disclaimer">Research prototype with synthetic demo data and illustrative scores. Not validated for medical use. A low score must not delay seeking medical help.</p>
+              <p className="footer-disclaimer">Research prototype: synthetic demos and separate retrospective ICU research. Not validated for medical use. A low score must not delay seeking medical help.</p>
             </div>
           </footer>
         </Providers>
