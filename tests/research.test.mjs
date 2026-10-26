@@ -124,3 +124,27 @@ test("a completed reference window with too few readings is not still building",
   const html = words(renderToStaticMarkup(React.createElement(components.ResearchRecordView, {record:sparse, index:12, threshold:.2, onIndexChange:()=>{}})));
   assert.ok(html.includes("Not enough initial readings to compare."));
 });
+
+test("unreachable validation target never becomes zero misses or zero false alerts", () => {
+  const missing = { ...cohort, threshold:null, detectedStays:null, missedStays:null, falseAlarmStays:null, falsePositiveHours:null, falsePositiveHoursPer100:null };
+  const bundle = parse(modelText, { ...report, threshold:null, validation:missing, internalTest:missing, externalTest:missing });
+  const original = data.loadResearchBundle;
+  try {
+    data.loadResearchBundle = () => bundle;
+    const page = load(path.join(root, "src/app/research/page.tsx"));
+    const html = words(renderToStaticMarkup(React.createElement(page.default)));
+    assert.ok(html.includes("No threshold met the validation target."));
+    assert.ok(html.includes("Threshold-dependent outcomes were not evaluated"));
+    assert.ok(!html.includes("0 septic stays were missed"));
+    assert.ok(!html.includes("0.0%"));
+    assert.ok(!html.includes("This threshold generates too many false alerts"));
+  } finally { data.loadResearchBundle = original; }
+});
+
+test("exact observations preserve original fractional measurements", () => {
+  const fractional = { ...record, hours:[{ ...record.hours[0], tempC:36.17, heartRate:82.25 }] };
+  const html = renderToStaticMarkup(React.createElement(components.ResearchRecordView,{record:fractional,index:0,threshold:.2,onIndexChange:()=>{}}));
+  const table = html.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
+  assert.ok(table.includes("36.17"));
+  assert.ok(table.includes("82.25"));
+});

@@ -7,6 +7,7 @@ import { researchSnapshot, type ResearchRecord } from "@/lib/research";
 import styles from "./ResearchExplorer.module.css";
 
 const decimal = (value: number | null, digits = 2) => value === null ? "—" : value.toFixed(digits);
+const exact = (value: number | null) => value === null ? "—" : String(value);
 
 export function ResearchExplorer({ records, threshold }: { records: ResearchRecord[]; threshold: number | null }) {
   const [selected, setSelected] = useState(0);
@@ -71,7 +72,7 @@ export function ResearchRecordView({ record, index, onIndexChange, threshold }: 
       <details><summary>Exact observations revealed so far ({visible.length})</summary><div className={styles.tableWrap} tabIndex={0} role="region" aria-label="Revealed observations, scroll horizontally if needed"><table>
         <caption>Current-hour measurements; a dash means not recorded. The score may use earlier values as described above.</caption>
         <thead><tr><th scope="col">Hour</th><th scope="col">HR · bpm</th><th scope="col">Breaths/min</th><th scope="col">Temp · °C</th><th scope="col">SpO₂ · %</th><th scope="col">Score</th></tr></thead>
-        <tbody>{visible.map(row => <tr key={row.hour}><th scope="row">Hour {row.hour}</th><td>{decimal(row.heartRate, 1)}</td><td>{decimal(row.respRate, 1)}</td><td>{decimal(row.tempC, 1)}</td><td>{decimal(row.spo2, 1)}</td><td>{decimal(row.risk, 3)}</td></tr>)}</tbody>
+        <tbody>{visible.map(row => <tr key={row.hour}><th scope="row">Hour {row.hour}</th><td>{exact(row.heartRate)}</td><td>{exact(row.respRate)}</td><td>{exact(row.tempC)}</td><td>{exact(row.spo2)}</td><td>{exact(row.risk)}</td></tr>)}</tbody>
       </table></div></details>
     </div>
   </div>;
