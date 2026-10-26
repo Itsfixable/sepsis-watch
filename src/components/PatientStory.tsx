@@ -21,7 +21,7 @@ export function PatientStory({ replays }: { replays: ReplayRecord[] }) {
   const record = replays.find((item) => item.id === selected);
   return (
     <div className={styles.page}>
-      <div className={styles.breadcrumb}><Link href="/replay">Timelines</Link><span>/</span><span>Patient story</span><span className={styles.prototype}>Local UI prototype</span></div>
+      <div className={styles.breadcrumb}><Link href="/replay">Timelines</Link><span>/</span><span>Patient story</span><span className={styles.prototype}>Patient story</span></div>
       <header className={styles.heading}>
         <div><p className={styles.eyebrow}>SEPSISWATCH / PATIENT STORY</p><h1>Changes, in context.</h1><p>One moment in time. The readings, the trend, and what changed.</p></div>
         <div className={styles.demoNote}><Icon name="info" size={17} /><div><strong>Synthetic demo data</strong><span>Invented patients. Illustrative scores.</span></div></div>
@@ -165,6 +165,6 @@ function Story({ record }: { record: ReplayRecord }) {
         <p className={styles.safetyNote}><Icon name="info" size={17} /><span><strong>A research prototype, not a medical device.</strong> A low score does not mean someone is well. If someone seems seriously unwell, seek medical help regardless of this display.</span></p>
       </aside>
     </div>
-    <div className={styles.bottomNote}><span><Icon name="check" size={15} />All panels follow the same selected hour.</span><Link href="/replay">Compare with the existing interface <Icon name="arrow" size={15} /></Link></div>
+    <div className={styles.bottomNote}><span><Icon name="check" size={15} />All panels follow the same selected hour.</span><Link href="/replay/classic">Open detailed comparison <Icon name="arrow" size={15} /></Link></div>
   </section>;
 }
