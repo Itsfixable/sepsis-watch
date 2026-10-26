@@ -84,7 +84,7 @@ test("a copied observation summary preserves missingness and prototype context",
   assert.equal(typeof story.observationSummary, "function");
   const record = JSON.parse(readFileSync(new URL("../data/replays/patient-a.json", import.meta.url), "utf8"));
   const text = story.observationSummary(record, 35);
-  assert.match(text, /synthetic/i);
+  assert.match(text, /simulated/i);
   assert.match(text, /not.*diagnos/i);
   assert.match(text, /113 bpm/);
   assert.match(text, /29 bpm/);

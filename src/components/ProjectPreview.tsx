@@ -19,7 +19,7 @@ export function ProjectPreview({ replays }: { replays: ReplayRecord[] }) {
   if (replay.sepsisOnsetHour !== null) markers.push({ x: replay.sepsisOnsetHour, label: `${replay.source === "synthetic" ? "Simulated" : "Recorded"} onset · h${replay.sepsisOnsetHour}`, tone: "neutral" });
   return (
     <section className="project-preview" aria-labelledby="preview-title">
-      <div className="preview-heading"><h2 id="preview-title">A score in context</h2><span className="evidence-tag">{replay.source === "synthetic" ? "Synthetic data" : "Hospital record"}</span></div>
+      <div className="preview-heading"><h2 id="preview-title">A score in context</h2>{replay.source !== "synthetic" && <span className="evidence-tag">Hospital record</span>}</div>
       <label className="preview-select">Explore a patient timeline
         <select value={replay.id} onChange={(event) => setSelectedId(event.target.value)}>{replays.map((record) => <option key={record.id} value={record.id}>{record.label}</option>)}</select>
       </label>

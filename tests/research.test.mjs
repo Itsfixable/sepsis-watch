@@ -153,12 +153,15 @@ test("published research page validates real artifacts and states the false-alar
   assert.match(html, /Hospital B/);
 });
 
-test("research jump link has a focusable target and error summary precedes results", () => {
+test("research opens on records and keeps evaluation in a closed disclosure below them", () => {
   const page = load(path.join(root, "src/app/research/page.tsx"));
   const html = renderToStaticMarkup(React.createElement(page.default));
-  assert.match(html, /href="#records-title"/);
   assert.match(html, /id="records-title"[^>]*tabindex="-1"/);
-  assert.ok(html.indexOf("This threshold generates too many false alerts") < html.indexOf("<table"));
+  const evaluation = html.match(/<details id="evaluation-details"[^>]*>([\s\S]*?)<\/details>/);
+  assert.ok(evaluation, "Evaluation remains accessible in a disclosure");
+  assert.doesNotMatch(evaluation[0].split(">")[0], /\bopen\b/);
+  assert.ok(html.indexOf('id="records-title"') < html.indexOf('id="evaluation-details"'));
+  assert.ok(evaluation[1].indexOf("This threshold generates too many false alerts") < evaluation[1].indexOf("<table"));
   assert.match(words(html), /Scroll sideways/);
   assert.match(words(html), /What the model used/);
   assert.doesNotMatch(words(html), /Model input details unavailable/);

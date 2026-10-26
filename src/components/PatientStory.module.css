@@ -197,3 +197,23 @@
   .hourSteps { grid-row: 3; }
 }
 @media (prefers-reduced-motion: reduce) { .page *, .page *::before, .page *::after { transition: none !important; scroll-behavior: auto !important; } }
+
+.columnLabels, .readingRow { grid-template-columns: minmax(130px, 1.5fr) .9fr 1fr .8fr minmax(115px, 1.1fr); gap: 10px; }
+.columnLabels span:last-child { text-align: left; }
+.latestReading { display: flex; flex-direction: column; gap: 4px; font-variant-numeric: tabular-nums; min-width: 0; }
+.latestReading strong { font-size: 19px; font-weight: 500; }
+.latestReading small { font-size: 10px; color: #536b5f; font-weight: 400; line-height: 1.5; }
+.latestLabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 1100px) {
+  .columnLabels, .readingRow { grid-template-columns: minmax(120px,1.4fr) .8fr .8fr minmax(110px,1.1fr); gap: 8px; }
+}
+@media (min-width: 561px) and (max-width: 850px) {
+  .columnLabels, .readingRow { grid-template-columns: minmax(120px,1.4fr) .8fr 1fr .8fr minmax(110px,1.1fr); }
+}
+@media (max-width: 560px) {
+  .columnLabels, .readingRow { grid-template-columns: minmax(120px,1.5fr) .75fr .75fr; }
+  .columnLabels span:last-child { display: none; }
+  .latestReading { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; border-top: 1px dotted #dce5de; padding-top: 9px; margin-top: 3px; }
+  .latestLabel { position: static; width: auto; height: auto; overflow: visible; clip-path: none; font-size: 10px; color: #536b5f; }
+  .latestReading strong { font-size: 16px; }
+}

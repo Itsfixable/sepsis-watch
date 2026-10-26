@@ -1,7 +1,7 @@
 {
   "id": "patient-c",
   "label": "Patient C · Urinary infection",
-  "description": "Synthetic demo patient: a 78-year-old man admitted with a urinary tract infection.",
+  "description": "Simulated patient: a 78-year-old man admitted with a urinary tract infection.",
   "source": "synthetic",
   "age": 78,
   "sex": "M",

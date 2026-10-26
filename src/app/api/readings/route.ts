@@ -10,7 +10,7 @@ import { localReadingsEnabled } from "@/lib/monitorMode";
 
 function disabledResponse() {
   const body: ApiError = {
-    error: "Live readings are disabled. This site uses a self-contained synthetic demo.",
+    error: "Live readings are disabled. This site uses a self-contained simulated scenario.",
     details: ["The Python/API demonstration is available only in explicitly enabled local development."],
   };
   return Response.json(body, { status: 403, headers: { "Cache-Control": "no-store" } });

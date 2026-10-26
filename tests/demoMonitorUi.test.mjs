@@ -40,7 +40,9 @@ const text = (html) => html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ");
 test("demo Monitor renders labeled synthetic data with only the first 24 observations", () => {
   const html = render([patient]);
   const words = text(html);
-  assert.match(words, /Synthetic demo data/);
+  assert.match(words, /Simulated Patient A/);
+  assert.match(words, /research prototype, not a medical device/i);
+  assert.doesNotMatch(words, /\b(demo|synthetic)\b/i);
   assert.match(words, /Hour 23 of 47/);
   assert.match(words, /every 3 seconds/);
   assert.match(words, /Illustrative score/);
@@ -75,10 +77,10 @@ test("missing illustrative score has a no-score state instead of a low-risk clai
 });
 
 test("short records open completed and empty or hospital-only inputs never masquerade as demo patients", () => {
-  assert.match(text(render([{ ...patient, hours: patient.hours.slice(0, 2) }])), /Demo complete/);
-  assert.match(text(render([])), /No demo records available/);
-  assert.match(text(render([{ ...patient, source: "physionet2019" }])), /No demo records available/);
-  assert.match(text(render([{ ...patient, hours: [] }])), /No demo records available/);
+  assert.match(text(render([{ ...patient, hours: patient.hours.slice(0, 2) }])), /Playback complete/);
+  assert.match(text(render([])), /No patient scenarios available/);
+  assert.match(text(render([{ ...patient, source: "physionet2019" }])), /No patient scenarios available/);
+  assert.match(text(render([{ ...patient, hours: [] }])), /No patient scenarios available/);
 });
 
 test("Patient A is the default even when other synthetic scenarios precede it", () => {
@@ -91,8 +93,8 @@ test("Patient A is the default even when other synthetic scenarios precede it", 
 test("local API monitor identifies itself as a synthetic-data demonstration", () => {
   const { LiveMonitor } = loadSource(path.join(root, "src/components/LiveMonitor.tsx"));
   const html = renderToStaticMarkup(React.createElement(QueryClientProvider, { client: new QueryClient() }, React.createElement(LiveMonitor)));
-  assert.match(text(html), /Local API demonstration/);
-  assert.match(text(html), /Synthetic data only/);
+  assert.match(text(html), /Local API monitor/);
+  assert.match(text(html), /Simulated readings only/);
   assert.doesNotMatch(text(html), /Bedside unit|Sepsis risk score/);
 });
 
@@ -105,7 +107,7 @@ test("local timestamp observations do not inherit the public demo's hour heading
   }]);
   const html = renderToStaticMarkup(React.createElement(QueryClientProvider, { client }, React.createElement(LiveMonitor)));
   assert.match(html, /<th[^>]*>Time<\/th>/);
-  assert.match(html, /<th[^>]*>Demo score<\/th>/);
+  assert.match(html, /<th[^>]*>Illustrative score<\/th>/);
   assert.doesNotMatch(html, /<th[^>]*>Simulated hour<\/th>/);
   assert.match(html, /<tbody><tr>/);
 });
@@ -115,7 +117,7 @@ test("detailed synthetic replay uses illustrative status instead of clinical-ris
   const html = renderToStaticMarkup(React.createElement(ReplayPlayer, { replays: [patient] }));
   assert.match(html, /aria-label="Illustrative score status"/);
   assert.doesNotMatch(text(html), /Continue routine monitoring|Sepsis risk score/);
-  assert.match(html, /<th[^>]*>Demo score<\/th>/);
+  assert.match(html, /<th[^>]*>Illustrative score<\/th>/);
 });
 
 test("research-record replay retains its separate source and score labels", () => {
@@ -123,7 +125,7 @@ test("research-record replay retains its separate source and score labels", () =
   const html = renderToStaticMarkup(React.createElement(ReplayPlayer, { replays: [{ ...patient, source: "physionet2019" }] }));
   assert.match(text(html), /Hospital record/);
   assert.match(html, /<th[^>]*>Risk score<\/th>/);
-  assert.doesNotMatch(html, /<th[^>]*>Demo score<\/th>/);
+  assert.doesNotMatch(html, /<th[^>]*>Illustrative score<\/th>/);
 });
 
 test("patient story surfaces historical temperature separately from current findings", () => {
@@ -137,6 +139,22 @@ test("patient story surfaces historical temperature separately from current find
   assert.match(earlier, /earlier reading.*not.*current/i);
   assert.match(context, /3 current readings differ/);
   assert.doesNotMatch(findings, /Temperature/);
+});
+
+test("latest-recorded column shows timestamped history without filling the current reading", () => {
+  const { PatientStory } = loadSource(path.join(root, "src/components/PatientStory.tsx"));
+  const html = renderToStaticMarkup(React.createElement(PatientStory, { replays: [patient] }));
+  const temperature = html.match(/<button[^>]*aria-label="Inspect Temperature trend"[\s\S]*?<\/button>/)[0];
+  assert.match(text(temperature), /Latest recorded 38\.1 °C Hour 34 · 1 h earlier/);
+  assert.match(text(temperature), /Not recorded/);
+  assert.match(text(temperature), /No comparison/);
+  const heart = html.match(/<button[^>]*aria-label="Inspect Heart rate trend"[\s\S]*?<\/button>/)[0];
+  assert.match(text(heart), /Latest recorded 113 bpm Hour 35 · This hour/);
+  const noHistory = { ...patient, hours: [{ ...patient.hours[0], tempC: null, risk: .7 }, { ...patient.hours[1], tempC: 39 }] };
+  const early = renderToStaticMarkup(React.createElement(PatientStory, { replays: [noHistory] }));
+  const earlyTemp = early.match(/<button[^>]*aria-label="Inspect Temperature trend"[\s\S]*?<\/button>/)[0];
+  assert.match(text(earlyTemp), /Latest recorded — No readings yet/);
+  assert.doesNotMatch(text(earlyTemp), /39/);
 });
 
 test("patient story distinguishes no history from a timestamped earlier measurement", () => {

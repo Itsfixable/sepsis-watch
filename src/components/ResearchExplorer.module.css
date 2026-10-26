@@ -119,6 +119,8 @@
 .vitals p { font-size: 11px; line-height: 1.7; color: #52685d; }
 .context { margin-top: 8px; }
 .notes { border-top: 1px solid #dce5df; padding: 0 28px; }
+.evaluationDetails { border-block: 1px solid #e4ebe6; margin-top: 28px; }
+.evaluationDetails > summary { cursor: pointer; padding: 20px 0; min-height: 48px; font-size: 16px; font-weight: 600; }
 .notes details { border-bottom: 1px solid #e4ebe6; padding: 4px 0; }
 .notes details:last-child { border-bottom: 0; }
 .notes summary { cursor: pointer; padding: 16px 0; min-height: 48px; font-size: 13px; font-weight: 600; }

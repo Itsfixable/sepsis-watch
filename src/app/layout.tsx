@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s · SepsisWatch",
   },
   description:
-    "Explore synthetic vital signs, illustrative warning scores, and interactive patient timelines in the SepsisWatch research prototype.",
+    "Explore simulated vital signs, illustrative warning scores, and interactive patient timelines in the SepsisWatch research prototype.",
 };
 
 export const viewport: Viewport = {
@@ -41,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <footer className="site-footer">
             <div className="footer-inner">
               <div><span className="footer-label">Built for earlier awareness.</span><p>SepsisWatch · Congressional App Challenge</p></div>
-              <p className="footer-disclaimer">Research prototype: synthetic demos and separate retrospective ICU research. Not validated for medical use. A low score must not delay seeking medical help.</p>
+              <p className="footer-disclaimer">Research prototype: simulated scenarios and separate retrospective ICU research. Not validated for medical use. A low score must not delay seeking medical help.</p>
             </div>
           </footer>
         </Providers>

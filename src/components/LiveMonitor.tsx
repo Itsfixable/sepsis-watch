@@ -62,7 +62,7 @@ export function LiveMonitor() {
     <div className="page-shell">
       <div className="breadcrumb"><span>Workspace</span><Icon name="chevron" size={11} /><span>Monitor</span></div>
       <div className="page-heading">
-        <div><h1>Local API demonstration</h1><p className="page-description">Synthetic data only · readings sent by the Python sensor stand-in.</p></div>
+        <div><h1>Local API monitor</h1><p className="page-description">Simulated readings only · readings sent by the Python sensor stand-in.</p></div>
         <div className="page-actions">
           <span className="connection" role="status"><span className={`status-dot ${dotClass}`} />{connectionLabel}</span>
           <button className="button" type="button" onClick={() => refetch()} disabled={isFetching}><Icon name="refresh" size={14} />{isFetching ? "Refreshing…" : "Refresh"}</button>
@@ -75,15 +75,15 @@ export function LiveMonitor() {
 
       <div className="patient-strip">
         <span className="bed-icon"><Icon name="bed" size={20} /></span>
-        <div className="patient-title"><strong>Local demo stream</strong><span>Python sensor stand-in</span></div>
+        <div className="patient-title"><strong>Local reading stream</strong><span>Python sensor stand-in</span></div>
         <span className="patient-strip-meta"><Icon name="clock" size={13} />{latest ? `Last reading ${dateTimeFmt.format(new Date(latest.timestamp))}` : "No readings received"}</span>
       </div>
-      <VitalTiles values={tiles} history={readings} sourceLabel="Local demo reading" />
+      <VitalTiles values={tiles} history={readings} sourceLabel="Local reading" />
 
       <div className="monitor-grid">
         <section aria-labelledby="trend-title" className="trend-panel">
           <div className="panel-heading">
-            <div><h2 id="trend-title">Illustrative score over time</h2><p className="panel-subtitle">Synthetic observations received through the local API</p></div>
+            <div><h2 id="trend-title">Illustrative score over time</h2><p className="panel-subtitle">Simulated observations received through the local API</p></div>
             <div className="segmented-control" role="group" aria-label="Chart time window">{WINDOWS.map((hours) => <button key={hours} type="button" aria-pressed={chartHours === hours} onClick={() => setChartHours(hours)}>{hours}h</button>)}</div>
           </div>
           <div className="chart-legend"><span /><span>Illustrative score</span><span className="chart-legend-note">Not a probability</span></div>
@@ -95,7 +95,7 @@ export function LiveMonitor() {
         <StatusLight risk={latest?.risk ?? null} caption={latest ? timeFmt.format(new Date(latest.timestamp)) : undefined} illustrative />
       </div>
 
-      {readings.length > 0 && <DataTable caption="Synthetic observations from the local Python sender" rows={readings.map((r) => ({ ...r, key: r.timestamp, time: dateTimeFmt.format(new Date(r.timestamp)) }))} illustrative />}
+      {readings.length > 0 && <DataTable caption="Simulated observations from the local Python sender" rows={readings.map((r) => ({ ...r, key: r.timestamp, time: dateTimeFmt.format(new Date(r.timestamp)) }))} illustrative />}
 
       <section className="replay-promo" aria-label="Explore timelines">
         <div className="promo-icon"><Icon name="replay" size={20} /></div>
@@ -114,7 +114,7 @@ function EmptyChart({ loading, hasError }: { loading: boolean; hasError: boolean
   return (
     <div className="empty-chart" aria-busy={loading}>
       {loading ? <><span className="sr-only">Loading readings</span><div className="chart-skeleton" aria-hidden="true">{Array.from({ length: 9 }, (_, i) => <span key={i} />)}</div></> : (
-        <div className="empty-chart-content"><Icon name={hasError ? "signal" : "monitor"} size={29} /><h3>{hasError ? "Waiting for connection" : "Ready for the first reading"}</h3><p>{hasError ? "The trend will return when the server reconnects." : "Run scripts/demo_pi.py locally to send synthetic observations."}</p><Link href="/replay" className="text-link">Explore timelines<Icon name="arrow" size={13} /></Link></div>
+        <div className="empty-chart-content"><Icon name={hasError ? "signal" : "monitor"} size={29} /><h3>{hasError ? "Waiting for connection" : "Ready for the first reading"}</h3><p>{hasError ? "The trend will return when the server reconnects." : "Use the local Python sender to send simulated observations."}</p><Link href="/replay" className="text-link">Explore timelines<Icon name="arrow" size={13} /></Link></div>
       )}
     </div>
   );

@@ -29,7 +29,7 @@ export function ReplayPlayer({ replays }: { replays: ReplayRecord[] }) {
             <input className="sr-only" type="radio" name="patient" value={r.id} checked={r.id === replay.id} onChange={() => setSelectedId(r.id)} />
             <span className="patient-monogram" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
             <span className="patient-option-details"><span className="patient-option-name">{r.label}</span><span className="patient-option-meta">{[r.age !== null ? `${r.age} years` : null, r.sex === "F" ? "Female" : r.sex === "M" ? "Male" : null, `${r.hours.length}h record`].filter(Boolean).join(" · ")}</span></span>
-            <span className="source-badge">{r.source === "physionet2019" ? "PhysioNet 2019" : "Synthetic data"}</span>
+            <span className="source-badge">{r.source === "physionet2019" ? "PhysioNet 2019" : "Simulated data"}</span>
           </label>
         ))}
       </fieldset>
@@ -100,7 +100,7 @@ function Player({ replay }: { replay: ReplayRecord }) {
       <div className="replay-description"><span>About this record</span><p>{replay.description}</p></div>
       <div className="replay-context"><Icon name="info" size={16} /><p>{replay.source === "synthetic" ? "These are invented patient scenarios and illustrative risk scores. Replay demonstrates the interface, not predictive accuracy." : "This replay uses a de-identified hospital record with supplied model scores. One patient's timeline is not a measure of overall model performance."}</p></div>
       <div className="playback-panel">
-        <p className="playback-selected">{replay.label}<span>{replay.source === "synthetic" ? "Synthetic data" : "Hospital record"}</span></p>
+        <p className="playback-selected">{replay.label}<span>{replay.source === "synthetic" ? "Simulated data" : "Hospital record"}</span></p>
         <button type="button" onClick={togglePlay} className="play-button">
           {playing ? <PauseIcon /> : atEnd ? <Icon name="replay" size={17} /> : <PlayIcon />}{playLabel}
         </button>
@@ -121,13 +121,13 @@ function Player({ replay }: { replay: ReplayRecord }) {
         <button type="button" className="button" onClick={() => jumpTo(lastIndex)}>View result<Icon name="arrow" size={13} /></button>
       </div>
 
-      {atEnd && <div role="status" className="replay-result" data-outcome={summary.outcome}><Icon name="info" size={19} /><div><h2>{summary.text}</h2><p className="replay-compare">{news2Comparison(redHour, news2Hour)}</p><p>{replay.source === "synthetic" ? "Synthetic demonstration. These values illustrate the dashboard and do not validate clinical performance." : "Replayed from a de-identified PhysioNet 2019 record with supplied model scores."}</p></div></div>}
+      {atEnd && <div role="status" className="replay-result" data-outcome={summary.outcome}><Icon name="info" size={19} /><div><h2>{summary.text}</h2><p className="replay-compare">{news2Comparison(redHour, news2Hour)}</p><p>{replay.source === "synthetic" ? "Simulated scenario. These values illustrate the dashboard and do not validate clinical performance." : "Replayed from a de-identified PhysioNet 2019 record with supplied model scores."}</p></div></div>}
 
-      <VitalTiles values={tiles} history={shown} sourceLabel={replay.source === "synthetic" ? "Synthetic observation" : "Hospital record"} />
+      <VitalTiles values={tiles} history={shown} sourceLabel={replay.source === "synthetic" ? "Simulated observation" : "Hospital record"} />
       <div className="monitor-grid">
         <section aria-labelledby="replay-trend-title" className="trend-panel">
           <div className="panel-heading"><div><h2 id="replay-trend-title">{illustrative ? "Illustrative score over time" : "Risk over time"}</h2><p className="panel-subtitle">{replay.label} · Hour {firstHour} to {finalHour}</p></div><span className="replay-heading-tag"><Icon name="replay" size={12} />{illustrative ? "Scenario replay" : "Historical replay"}</span></div>
-          <div className="chart-legend"><span /><span>{illustrative ? "Illustrative score" : "Risk score"}</span><span className="chart-legend-note">{illustrative ? "Synthetic demonstration" : "PhysioNet 2019 record"}</span></div>
+          <div className="chart-legend"><span /><span>{illustrative ? "Illustrative score" : "Risk score"}</span><span className="chart-legend-note">{illustrative ? "Simulated scenario" : "PhysioNet 2019 record"}</span></div>
           <RiskChart points={shown.map((h) => ({ x: h.hour, risk: h.risk }))} xDomain={firstHour === finalHour ? [firstHour, finalHour + 1] : [firstHour, finalHour]} xTicks={hourTicks(firstHour, finalHour)} formatTick={(x) => `h${x}`} formatX={(x) => `Hour ${x}`} markers={markers} showEndDot illustrative={illustrative} ariaLabel={`${illustrative ? "Illustrative score" : "Risk score"} for ${replay.label} up to hour ${current.hour}. ${atEnd ? summary.text : ""}`} />
           <div className="chart-footer"><Legend markers={markers} onsetLabel={onsetLabel} /><span>{shown.length} of {hours.length} readings</span></div>
         </section>

@@ -89,7 +89,7 @@ export function observationSummary(record: ReplayRecord, index: number): string 
   });
   return [
     `SepsisWatch — ${record.label} — hour ${snapshot.hour}`,
-    record.source === "synthetic" ? "Synthetic demo data; illustrative scores." : "Retrospective record review.",
+    record.source === "synthetic" ? "Simulated scenarios; illustrative scores." : "Retrospective record review.",
     ...lines,
     `Reference: median of available readings in the first 12 hours; at least 3 per vital. ${snapshot.referenceComplete ? "Reference window complete." : "Reference is still building."}`,
     "Research prototype, not a diagnosis or validated medical device. This summary does not establish whether someone is well or unwell.",

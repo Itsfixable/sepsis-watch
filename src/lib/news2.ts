@@ -68,10 +68,10 @@ export function firstNews2AlertHour(hours: ReplayHour[]): number | null {
 export function news2Comparison(redHour: number | null, news2Hour: number | null): string {
   const hrs = (n: number) => `${n} ${n === 1 ? "hour" : "hours"}`;
   const label = "The four-vital NEWS2 comparison (partial score)";
-  if (redHour === null && news2Hour === null) return `${label} did not reach its demo threshold either.`;
-  if (news2Hour === null) return `${label} did not reach its demo threshold.`;
-  if (redHour === null) return `${label} reached its demo threshold at hour ${news2Hour}.`;
-  if (news2Hour > redHour) return `${label} reached its demo threshold at hour ${news2Hour}, ${hrs(news2Hour - redHour)} later.`;
-  if (news2Hour < redHour) return `${label} reached its demo threshold first, at hour ${news2Hour}.`;
-  return `${label} reached its demo threshold at the same hour.`;
+  if (redHour === null && news2Hour === null) return `${label} did not reach its illustrative threshold either.`;
+  if (news2Hour === null) return `${label} did not reach its illustrative threshold.`;
+  if (redHour === null) return `${label} reached its illustrative threshold at hour ${news2Hour}.`;
+  if (news2Hour > redHour) return `${label} reached its illustrative threshold at hour ${news2Hour}, ${hrs(news2Hour - redHour)} later.`;
+  if (news2Hour < redHour) return `${label} reached its illustrative threshold first, at hour ${news2Hour}.`;
+  return `${label} reached its illustrative threshold at the same hour.`;
 }

@@ -1,7 +1,7 @@
 {
   "id": "patient-b",
   "label": "Patient B · After knee surgery",
-  "description": "Synthetic demo patient: a 54-year-old man recovering in the ICU the day after knee replacement surgery.",
+  "description": "Simulated patient: a 54-year-old man recovering in the ICU the day after knee replacement surgery.",
   "source": "synthetic",
   "age": 54,
   "sex": "M",
