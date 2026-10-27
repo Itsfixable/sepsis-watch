@@ -11,10 +11,10 @@ function load(relative) {
   const code = ts.transpileModule(readFileSync(new URL(relative, import.meta.url), "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
   }).outputText;
-  const module = { exports: {} };
+  const compiled = { exports: {} };
   new Function("require", "module", "exports", code)(
-    (name) => name === "../lib/thresholds" ? load("../src/lib/thresholds.ts") : require(name), module, module.exports);
-  return module.exports;
+    (name) => name === "../lib/thresholds" ? load("../src/lib/thresholds.ts") : require(name), compiled, compiled.exports);
+  return compiled.exports;
 }
 
 test("risk stroke switches to red at 0.60 independently of the observed score range", () => {

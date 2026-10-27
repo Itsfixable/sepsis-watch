@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { requireUser } from "@/lib/auth/requireUser";
+
+export const dynamic = "force-dynamic";
 import { Icon } from "@/components/Icon";
 import { ReplayPlayer } from "@/components/ReplayPlayer";
 import { loadReplays } from "@/lib/replays";
 
 export const metadata: Metadata = { title: "Timelines" };
 
-export default function ReplayPage() {
+export default async function ReplayPage() {
+  await requireUser("/replay/classic");
   const replays = loadReplays();
   return (
     <div className="page-shell">

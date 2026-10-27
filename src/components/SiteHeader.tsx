@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "./Icon";
+import { AccountControl } from "./AccountControl";
 
 const LINKS = [
   { href: "/about", label: "Overview", icon: "info" },
@@ -26,7 +27,7 @@ export function SiteHeader() {
             return <Link key={href} href={href} aria-current={active ? "page" : undefined} className="nav-link"><Icon name={icon} size={17} />{label}</Link>;
           })}
         </nav>
-        <div className="workspace-label"><span className="workspace-symbol" aria-hidden="true">SW</span><span>SepsisWatch<span className="workspace-subtitle">Patient monitoring workspace</span></span></div>
+        <AccountControl />
       </div>
     </header>
   );

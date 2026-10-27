@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { requireUser } from "@/lib/auth/requireUser";
+
+export const dynamic = "force-dynamic";
 import { LiveMonitor } from "@/components/LiveMonitor";
 import { DemoMonitor } from "@/components/DemoMonitor";
 import { localReadingsEnabled } from "@/lib/monitorMode";
@@ -7,6 +10,7 @@ import { loadReplays } from "@/lib/replays";
 
 export const metadata: Metadata = { title: "Monitor" };
 
-export default function MonitorPage() {
+export default async function MonitorPage() {
+  await requireUser("/monitor");
   return localReadingsEnabled() ? <LiveMonitor /> : <DemoMonitor records={demoRecords(loadReplays())} />;
 }
