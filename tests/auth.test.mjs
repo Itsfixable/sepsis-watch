@@ -31,10 +31,19 @@ test("return paths preserve internal deep links and reject redirects outside the
   }
 });
 
-test("all interactive routes and descendants require an account", () => {
+test("only account-management routes require an account", () => {
   const { isProtectedPath } = load("lib/auth/routeAccess.ts");
-  for (const value of ["/monitor", "/replay", "/replay/classic", "/research", "/prototype", "/update-password"]) assert.equal(isProtectedPath(value), true);
-  for (const value of ["/", "/about", "/login", "/signup", "/forgot-password", "/auth/callback", "/replays"]) assert.equal(isProtectedPath(value), false);
+  for (const value of ["/update-password", "/update-password/nested"]) assert.equal(isProtectedPath(value), true);
+  for (const value of ["/monitor", "/replay", "/replay/classic", "/research", "/prototype", "/", "/about", "/login", "/signup", "/forgot-password", "/auth/callback", "/replays"]) assert.equal(isProtectedPath(value), false);
+});
+
+test("guest destinations preserve workspace deep links but never account or external destinations", () => {
+  const { safeGuestReturnPath } = load("lib/auth/routeAccess.ts");
+  assert.equal(safeGuestReturnPath("/research?record=a#inputs"), "/research?record=a#inputs");
+  assert.equal(safeGuestReturnPath("/replay/classic"), "/replay/classic");
+  for (const value of [undefined, "/update-password", "/update-password/nested?next=/research", "https://evil.test", "//evil.test", "/%2f%2fevil.test", "/api/readings", "/replay/../update-password"]) {
+    assert.equal(safeGuestReturnPath(value), "/replay");
+  }
 });
 
 const { NextRequest } = require("next/server");
@@ -51,33 +60,44 @@ function proxyFor({ configured = true, user = null, error = null, throws = false
 
 test("unsigned and invalid sessions redirect without revealing protected content", async () => {
   for (const state of [{}, { user: { id: "forged" }, error: new Error("invalid") }, { throws: true }]) {
-    const response = await proxyFor(state)(new NextRequest("https://site.test/research?record=a"));
+    const response = await proxyFor(state)(new NextRequest("https://site.test/update-password"));
     assert.equal(response.status, 307);
     assert.equal(new URL(response.headers.get("location")).pathname, "/login");
-    assert.equal(new URL(response.headers.get("location")).searchParams.get("next"), "/research?record=a");
+    assert.equal(new URL(response.headers.get("location")).searchParams.get("next"), "/update-password");
     assert.match(response.headers.get("cache-control"), /no-store/);
   }
 });
 
-test("missing configuration fails closed but leaves Overview and login available", async () => {
+test("missing configuration fails closed for password changes but leaves public pages available", async () => {
   const run = proxyFor({ configured: false });
-  assert.equal((await run(new NextRequest("https://site.test/monitor"))).status, 307);
+  assert.equal((await run(new NextRequest("https://site.test/update-password"))).status, 307);
   assert.equal((await run(new NextRequest("https://site.test/about"))).status, 200);
   assert.equal((await run(new NextRequest("https://site.test/login"))).status, 200);
 });
 
+test("guests can reach workspace pages despite missing configuration or invalid sessions", async () => {
+  for (const state of [{}, { configured: false }, { throws: true }, { user: { id: "unconfirmed" } }, { error: new Error("invalid") }]) {
+    const run = proxyFor(state);
+    for (const route of ["/monitor", "/replay", "/replay/classic", "/research", "/prototype"]) {
+      const response = await run(new NextRequest("https://site.test" + route));
+      assert.equal(response.status, 200, route);
+      assert.equal(response.headers.get("location"), null);
+    }
+  }
+});
+
 test("confirmed accounts pass and session refresh cookies survive both responses and redirects", async () => {
   for (const user of [null, { id: "real-user", email_confirmed_at: "2026-10-26T00:00:00Z", is_anonymous: false }]) {
-    const response = await proxyFor({ user, refresh: true })(new NextRequest("https://site.test/replay"));
+    const response = await proxyFor({ user, refresh: true })(new NextRequest("https://site.test/update-password"));
     assert.equal(response.status, user ? 200 : 307);
     assert.equal(response.cookies.get("sb-test-auth-token")?.value, "renewed");
     assert.match(response.headers.get("cache-control"), /no-store/);
   }
 });
 
-test("anonymous and unconfirmed accounts cannot enter the workspace", async () => {
+test("anonymous and unconfirmed accounts cannot change passwords", async () => {
   for (const user of [{ id: "anon", is_anonymous: true }, { id: "unconfirmed", email_confirmed_at: null }]) {
-    assert.equal((await proxyFor({ user })(new NextRequest("https://site.test/replay"))).status, 307);
+    assert.equal((await proxyFor({ user })(new NextRequest("https://site.test/update-password"))).status, 307);
   }
 });
 
@@ -117,8 +137,8 @@ test("page guard rejects unverified cookies even if proxy was bypassed", async (
       "../supabase/config": { hasSupabaseConfig: () => true },
       "../supabase/server": { getSupabaseServerClient: async () => ({ auth: { getUser: async () => ({ data: { user }, error: null }) } }) },
     });
-    if (user?.email_confirmed_at) await requireUser("/research");
-    else await assert.rejects(requireUser("/research"), /REDIRECT:\/login\?next=%2Fresearch/);
+    if (user?.email_confirmed_at) await requireUser("/update-password");
+    else await assert.rejects(requireUser("/update-password"), /REDIRECT:\/login\?next=%2Fupdate-password/);
   }
 });
 
@@ -133,7 +153,8 @@ test("malformed auth configuration cannot crash public pages or unlock protected
       assert.equal(getSupabaseConfig(), null, url);
       const { updateSession } = load("lib/supabase/proxy.ts");
       assert.equal((await updateSession(new NextRequest("https://site.test/about"))).status, 200);
-      assert.equal((await updateSession(new NextRequest("https://site.test/replay"))).status, 307);
+      assert.equal((await updateSession(new NextRequest("https://site.test/replay"))).status, 200);
+      assert.equal((await updateSession(new NextRequest("https://site.test/update-password"))).status, 307);
     }
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     assert.equal(getSupabaseConfig().url, "https://example.supabase.co");

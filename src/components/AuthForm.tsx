@@ -4,13 +4,13 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { hasSupabaseConfig } from "@/lib/supabase/config";
-import { hasConfirmedAccount, safeReturnPath } from "@/lib/auth/routeAccess";
+import { hasConfirmedAccount, safeGuestReturnPath, safeReturnPath } from "@/lib/auth/routeAccess";
 import styles from "./AuthForm.module.css";
 
 type Mode = "login" | "signup" | "forgot" | "update";
 const copy = {
-  login: { title: "Welcome back.", intro: "Sign in to explore patient timelines, monitoring and research.", button: "Sign in" },
-  signup: { title: "Create your account.", intro: "Get access to the SepsisWatch research workspace.", button: "Create account" },
+  login: { title: "Welcome back.", intro: "Sign in to your account, or continue as a guest to explore the research workspace.", button: "Sign in" },
+  signup: { title: "Create your account.", intro: "Registration is optional. You can explore the research workspace as a guest.", button: "Create account" },
   forgot: { title: "Reset your password.", intro: "Enter your email to request a password reset link.", button: "Send reset link" },
   update: { title: "Choose a new password.", intro: "Use a unique password with at least 12 characters.", button: "Save password" },
 };
@@ -73,6 +73,10 @@ export function AuthForm({ mode, nextPath = "/replay", linkError = false }: { mo
       <p className={styles.eyebrow}>SepsisWatch · Account</p>
       <h1 id="auth-title">{text.title}</h1>
       <p className={styles.intro}>{text.intro}</p>
+      {(mode === "login" || mode === "signup") && <div className={styles.guest}>
+        <Link className={styles.guestLink} href={safeGuestReturnPath(nextPath)}>Continue as guest</Link>
+        <p className={styles.hint}>Explore sample timelines and research. No account or email verification required.</p>
+      </div>}
       {!configured ? <div className={styles.notice} role="status">Account access is being configured. Please try again later. You can still read the <Link href="/about">Overview</Link>.</div> :
         <form onSubmit={submit} className={styles.form}>
           {mode !== "update" && <label>Email address<input name="email" type="email" autoComplete="email" required maxLength={254} disabled={busy} /></label>}

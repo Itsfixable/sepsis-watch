@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { requireUser } from "@/lib/auth/requireUser";
 
 export const dynamic = "force-dynamic";
 import Link from "next/link";
@@ -39,7 +38,6 @@ function Results({ a, b }: { a: Evaluation; b: Evaluation }) {
 }
 
 export default async function ResearchPage() {
-  await requireUser("/research");
   const { report, records, modelSha256, imputation } = loadResearchBundle();
   return <div className={styles.page}>
     <header className={styles.hero}><Link href="/about">← Back to Overview</Link><p className={styles.eyebrow} style={{ marginTop: 28 }}>SepsisWatch / Research notebook</p>

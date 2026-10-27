@@ -1,9 +1,14 @@
 # Account access
 
-Overview (`/about`) remains public. Monitor, Timelines (including the classic
-view), Research, Prototype, and the password-update page require a confirmed
-Supabase email account. Both Next.js Proxy and each protected server page verify
-the user with Supabase. Missing configuration or failed verification denies access.
+Overview (`/about`), Monitor, Timelines (including the classic view), Research and
+Prototype are public sample-data pages. Login and signup offer **Continue as
+guest**, preserving a safe workspace destination without creating a Supabase
+account, sending email or setting a guest cookie. Direct workspace links work too.
+
+Accounts are optional. The password-update page still requires a confirmed
+Supabase email account, verified by both Next.js Proxy and the server page.
+Missing configuration or failed verification denies account-management access,
+but does not prevent browsing the sample-data workspace.
 
 ## Connect Supabase before merging
 
@@ -60,8 +65,10 @@ No patient records are uploaded or attached to accounts. Signing out removes
 the current browser session; it does not delete the account or sign out other devices.
 Account deletion is available to the project owner through the Supabase dashboard.
 
-The login wall controls the interactive workspace, not distribution of the
-sample data. Overview, the public repository, and bundled demo assets remain
+Guests see the same bundled records as signed-in visitors; no private patient
+data or account information is exposed by guest access. Hosting providers may
+still process request metadata such as IP addresses. Guest access does not mean
+anonymous network traffic. The public repository and bundled demo assets remain
 public. Do not use this implementation to store sensitive patient information.
 No database tables or row-level security policies are added in this PR.
 
@@ -74,21 +81,26 @@ enabled remotely, it needs its own authorization and per-user storage.
 These checks require a real configured Supabase project and mailbox; unit tests
 with mocked provider responses do not establish that email delivery works.
 
-- Register a new address; protected pages remain blocked until confirmation.
+- From login and signup, choose Continue as guest without entering credentials.
+- Open Monitor, Timelines, classic Timelines, Research and Prototype while signed
+  out, including when Supabase is unconfigured. They remain accessible.
+- Register a new address; password updates remain blocked until confirmation.
 - Open the confirmation email in the same browser; verify access to all four
   workspace pages and `/replay/classic`.
 - Refresh a protected page; the session persists.
-- Use a protected deep link while signed out; login returns to that page.
+- Use `/update-password` while signed out; login returns to that page. Choosing
+  Continue as guest instead goes to `/replay`, never password management.
 - Try an invalid password; the message does not identify account existence.
-- Sign out, use Back, and reopen a protected URL; access requires sign-in.
+- Sign out, use Back, and reopen `/update-password`; access requires sign-in.
 - Request a password reset, follow the link, set a new password, then sign in
   with it. Test an expired or reused email link and a recovery request for an
   unknown address.
 - Check the signup and login screens on a narrow phone viewport and with a keyboard.
 
-Without configuration, protected URLs redirect to login and login explains that
-account access is being configured. This state is intentional, but it means the
-PR must remain a draft until setup and the checks above are completed.
+Without configuration, `/update-password` redirects to login and login explains
+that account access is being configured. The guest link and sample pages remain
+available. Verify hosted account flows separately before claiming they work;
+guest access does not fix email delivery or remove provider rate limits.
 
 References: [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/creating-a-client),
 [password authentication](https://supabase.com/docs/guides/auth/passwords),
