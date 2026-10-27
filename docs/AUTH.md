@@ -33,6 +33,23 @@ the user with Supabase. Missing configuration or failed verification denies acce
    to an address outside the project team before directing judges to signup.
    Retain provider rate limits; review CAPTCHA settings before broad promotion.
 
+## Refresh production configuration
+
+`NEXT_PUBLIC_SUPABASE_URL` must be the project origin, for example
+`https://YOUR-PROJECT.supabase.co`, without `/rest/v1/` or a dashboard path.
+Use the publishable key from that same project and select the Production
+environment in Vercel. Do not paste quoted values or a secret/service-role key.
+
+Saving environment variables does not update an existing deployment. Redeploy
+Production or merge a new commit into the configured production branch to trigger
+a fresh build through the Vercel Git integration. If the deployment is skipped,
+check the project's build-ignore settings and deployment permissions.
+
+After the deployment is Ready, open `/login` in a private browser window. It
+should display the email and password form instead of the configuration notice.
+Then test signup, email confirmation, sign-in and sign-out. A successful build
+alone does not verify authentication or email delivery.
+
 ## What is collected
 
 Supabase handles the account email, password hash, authentication events and
