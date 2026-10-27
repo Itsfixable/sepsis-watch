@@ -23,7 +23,10 @@ function load(file) {
   const code = ts.transpileModule(readFileSync(resolved, "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
   }).outputText;
-  const localRequire = name => name === "server-only" ? {} : name.startsWith("@/") ? load(path.join(root, "src", name.slice(2)))
+  // These tests inspect research content after authorization. Access denial is
+  // exercised separately against the real guard in auth.test.mjs.
+  const localRequire = name => name === "@/lib/auth/requireUser" ? { requireUser: async () => {} }
+    : name === "server-only" ? {} : name.startsWith("@/") ? load(path.join(root, "src", name.slice(2)))
     : name.startsWith(".") ? load(path.resolve(path.dirname(resolved), name)) : require(name);
   vm.runInThisContext(`(function(require,module,exports){${code}\n})`, { filename: resolved })(localRequire, compiled, compiled.exports);
   return compiled.exports;
@@ -142,20 +145,20 @@ test("selected research hour renders synchronized measurements and only revealed
   assert.match(html, /aria-label="Research hour"/);
 });
 
-test("published research page validates real artifacts and states the false-alarm limitation", () => {
+test("published research page validates real artifacts and states the false-alarm limitation", async () => {
   const real = data.loadResearchBundle();
   assert.equal(real.report.exclusions.A.rawPatients, 20336);
   assert.equal(real.report.exclusions.B.rawPatients, 20000);
   const page = load(path.join(root, "src/app/research/page.tsx"));
-  const html = words(renderToStaticMarkup(React.createElement(page.default)));
+  const html = words(renderToStaticMarkup(await page.default()));
   assert.match(html, /This threshold generates too many false alerts for clinical use/);
   assert.match(html, /No sensor or live clinical model is connected/);
   assert.match(html, /Hospital B/);
 });
 
-test("research opens on records and keeps evaluation in a closed disclosure below them", () => {
+test("research opens on records and keeps evaluation in a closed disclosure below them", async () => {
   const page = load(path.join(root, "src/app/research/page.tsx"));
-  const html = renderToStaticMarkup(React.createElement(page.default));
+  const html = renderToStaticMarkup(await page.default());
   assert.match(html, /id="records-title"[^>]*tabindex="-1"/);
   const evaluation = html.match(/<details id="evaluation-details"[^>]*>([\s\S]*?)<\/details>/);
   assert.ok(evaluation, "Evaluation remains accessible in a disclosure");
@@ -173,14 +176,14 @@ test("a completed reference window with too few readings is not still building",
   assert.ok(html.includes("Not enough initial readings to compare."));
 });
 
-test("unreachable validation target never becomes zero misses or zero false alerts", () => {
+test("unreachable validation target never becomes zero misses or zero false alerts", async () => {
   const missing = { ...cohort, threshold:null, detectedStays:null, missedStays:null, falseAlarmStays:null, falsePositiveHours:null, falsePositiveHoursPer100:null };
   const bundle = parse(modelText, { ...report, threshold:null, validation:missing, internalTest:missing, externalTest:missing });
   const original = data.loadResearchBundle;
   try {
     data.loadResearchBundle = () => bundle;
     const page = load(path.join(root, "src/app/research/page.tsx"));
-    const html = words(renderToStaticMarkup(React.createElement(page.default)));
+    const html = words(renderToStaticMarkup(await page.default()));
     assert.ok(html.includes("No threshold met the validation target."));
     assert.ok(html.includes("Threshold-dependent outcomes were not evaluated"));
     assert.ok(!html.includes("0 septic stays were missed"));
