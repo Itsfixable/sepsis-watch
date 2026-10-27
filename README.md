@@ -3,10 +3,12 @@
 **A student research prototype with synthetic vital-sign demos and a separate retrospective ICU model experiment.** Congressional App Challenge 2026, Georgia's 7th district.
 
 Visit [SepsisWatch](https://sepsis-watch.vercel.app/) or open **http://localhost:3000/about** after starting the app.
-Overview is public. The interactive workspace requires a confirmed email account.
+Overview and the sample-data workspace are public. Login and signup offer
+**Continue as guest**, without an account or email verification. Password changes
+still require a confirmed email account.
 See [account setup](docs/AUTH.md) for Supabase configuration, Vercel variables,
-email delivery, and the required preview checks. Without configuration, the
-workspace stays locked and login displays a setup message.
+email delivery, and the required preview checks. Without configuration, login
+displays a setup message while guest access to the sample workspace remains available.
 Navigation is labeled Overview (`/about`), Monitor (`/monitor`), and Timelines (`/replay`).
 The root address (`/`) opens Overview. Timelines starts with Patient A at a key moment;
 choose **Replay from start** to follow the whole scenario. The **Open detailed comparison**
