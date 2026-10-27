@@ -191,7 +191,6 @@ function Story({ record }: { record: ReplayRecord }) {
           <div className={styles.scoreScale} aria-hidden="true"><span /><span /><span />{hour.risk !== null && <i style={{ left: `${hour.risk * 100}%` }} />}</div>
           <div className={styles.scaleLabels}><span>Low</span><span>Elevated</span><span>High</span></div>
         </section>
-        <p className={styles.safetyNote}><Icon name="info" size={17} /><span><strong>A research prototype, not a medical device.</strong> A low score does not mean someone is well. If someone seems seriously unwell, seek medical help regardless of this display.</span></p>
       </aside>
     </div>
     <div className={styles.bottomNote}><span><Icon name="check" size={15} />All panels follow the same selected hour.</span><Link href="/research">Explore the separate research model <Icon name="arrow" size={15} /></Link><Link href="/replay/classic">Open detailed comparison <Icon name="arrow" size={15} /></Link></div>
